@@ -32,6 +32,6 @@ logical_operators = {
 }
 
 def print_error(message, id=''):
-    print(f'\nError ID:{id}')
+    print(f'Error ID:{id}')
     print(f'Description:', message, '\n')
     sys.exit()
