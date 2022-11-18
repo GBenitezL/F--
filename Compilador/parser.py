@@ -3,7 +3,7 @@ import ply.yacc as yacc
 from lexer import tokens
 from semantic_cube import Semantic_Cube
 from directory import Scopes_Directory, Vars
-from utils import data_types, data_type_IDs , print_error
+from utils import data_type_IDs , print_error
 from quadruples import Quadruple
 from collections import deque
 
