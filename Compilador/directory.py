@@ -1,4 +1,4 @@
-from utils import data_types, print_error
+from utils import print_error
 
 types_enum = {
     'int': 0,
@@ -29,7 +29,7 @@ class Scopes_Directory(Directory):
     def add_new_scope(self, id, return_type, vars_table):
         if self.exists(id):
             print_error(f'{id} already exists in this scope', '')
-        if return_type not in data_types.values():
+        if return_type not in ['int', 'float', 'char', 'bool', 'void']:
             print_error(f'{id} does not have a return type {return_type}', '')
         parameters = []
         params_IDs = []
@@ -94,7 +94,7 @@ class Vars(Directory):
     def add_var(self, id, type, value = None):
         if id in self.directory:
             print_error('Variable {id} has already been declared in this scope', '')
-        if type == data_types['VOID'] or type not in data_types.values():
+        if type == 'void' or type not in ['int', 'float', 'char', 'bool']:
             print_error(f'{id} does not have a return type {type}', '')
         self.directory[id] = {'type': type ,'value': value, 'address': None}
     
