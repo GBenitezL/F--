@@ -25,7 +25,6 @@ keywords={
     'while': 'WHILE',
     'for': 'FOR',
     'print': 'PRINT',
-    'println': 'PRINTLN',
     'read': 'READ',
     'mean': 'MEAN',
     'median': 'MEDIAN',

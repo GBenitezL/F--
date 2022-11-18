@@ -1,5 +1,28 @@
+import sys
 import ply.yacc as yacc
 from lexer import tokens
+from semantic_cube import Semantic_Cube
+from directory import Scopes_Directory, Vars
+from utils import data_types, data_type_IDs , print_error
+from quadruples import Quadruple
+from collections import deque
+
+scopes = Scopes_Directory()
+current_scope = ''
+
+variables = deque()
+variable_parameters = deque()
+
+operators = deque()
+operands = deque()
+types = deque()
+jumps = deque()
+quadruples = [];
+temps_count = 0
+
+bool_arr = False
+arr_size = 0
+
 
 def p_program(p):
     '''program : PROGRAM ID SCOLON program_2
@@ -162,18 +185,11 @@ def p_for_loop(p):
     '''for_loop : FOR LPAREN ID EQUALS expression SCOLON expression SCOLON expression RPAREN block'''
 
 def p_write(p):
-    '''write : PRINT LPAREN write_same_line RPAREN SCOLON
-        | PRINTLN LPAREN write_new_line RPAREN SCOLON'''
+    '''write : PRINT LPAREN write_2 RPAREN SCOLON'''
 
-def p_write_same_line(p):
-    '''write_same_line : expression COMMA write_same_line
-        | CTESTRING COMMA write_same_line
-        | expression
-        | CTESTRING'''
-
-def p_write_new_line(p):
-    '''write_new_line : expression COMMA write_new_line
-        | CTESTRING  COMMA write_new_line
+def p_write_2(p):
+    '''write_2 : expression COMMA write_2
+        | CTESTRING COMMA write_2
         | expression
         | CTESTRING'''
 
@@ -207,9 +223,9 @@ def p_epsilon(p):
     p[0] = None
 
 def p_error(token):
-    print(f"Syntax Error: {token.value!r}")
-    print(token)
+    print(f"Syntax Error: {token.value!r}", token)
     token.lexer.skip(1)
+    sys.exit()
 
 parser = yacc.yacc()
 
