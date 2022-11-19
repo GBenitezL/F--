@@ -1,37 +1,37 @@
 class Memory():
-    count_global_int =  1100
-    count_global_float= 1200
-    count_global_char = 1300
-    count_global_bool = 1400
+    count_global_int =  11000
+    count_global_float= 12000
+    count_global_char = 13000
+    count_global_bool = 14000
 
-    count_local_int =   2100
-    count_local_float = 2200
-    count_local_char =  2300
-    count_local_bool =  2400
+    count_local_int =   21000
+    count_local_float = 22000
+    count_local_char =  23000
+    count_local_bool =  24000
 
-    count_temp_int =    3100
-    count_temp_float =  3200
-    count_temp_char =   3300
-    count_temp_bool =   3400
+    count_temp_int =    31000
+    count_temp_float =  32000
+    count_temp_char =   33000
+    count_temp_bool =   34000
 
-    count_const_int =   4100
-    count_const_float = 4200
-    count_const_char =  4300
-    count_const_bool =  4400
+    count_const_int =   41000
+    count_const_float = 42000
+    count_const_char =  43000
+    count_const_bool =  44000
 
-    count_pointers =    5000
+    count_pointers =    50000
 
     def reset_local_counters(self):
-        self.count_local_int = 2100
-        self.count_local_float = 2200
-        self.count_local_char = 2300
-        self.count_local_bool = 2400
+        self.count_local_int = 21000
+        self.count_local_float = 22000
+        self.count_local_char = 23000
+        self.count_local_bool = 24000
         
     def reset_temp_counters(self):
-        self.count_temp_int = 3100
-        self.count_temp_float = 3200
-        self.count_temp_char = 3300
-        self.count_temp_bool = 3400
+        self.count_temp_int = 31000
+        self.count_temp_float = 32000
+        self.count_temp_char = 33000
+        self.count_temp_bool = 34000
     
     def set_count(self, counter_type, type, space = 1):
         match counter_type:
