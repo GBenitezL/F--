@@ -17,7 +17,7 @@ class Directory():
 
     def get_one(self, id):
         if id not in self.directory:
-            return 'Not Found'
+            return None
         return self.directory[id]
     
     def print_directory(self):
@@ -56,13 +56,12 @@ class Scopes_Directory(Directory):
     
     def set_size(self, id):
         vars_table = self.directory[id]['vars_table'].directory
-        parameters = self.directory[id]['parameters']
         types_counter = [0] * 4 # Starts array with 0's
         total_size = 0
         for key, value in vars_table.items():
             var_type = value['type']
             item_size = 1
-            if ('bool_array' in value.keys() and value['bool_array']):
+            if ('is_array' in value.keys() and value['is_array']):
                 item_size = value['arr_size']
             data_type = types_enum[var_type]
             types_counter[data_type] += item_size
@@ -101,6 +100,6 @@ class Vars(Directory):
     def set_var_address(self, id, address):
         self.directory[id]['address'] = address
     
-    def set_arrray_values(self, id, bool_arr = False, arr_size = None):
-        self.directory[id]['bool_arr'] = bool_arr
+    def set_arrray_values(self, id, is_array = False, arr_size = None):
+        self.directory[id]['is_array'] = is_array
         self.directory[id]['arr_size'] = arr_size
