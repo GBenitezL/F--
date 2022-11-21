@@ -252,7 +252,6 @@ def evaluate(p):
     print('Evaluate:', p)
 
 def create_scope(scope_ID, return_type):
-      # Create the global scope
     global scopes, current_scope
     scopes.add_new_scope(scope_ID, return_type, Vars(scope_ID))
     current_scope = scope_ID
@@ -272,13 +271,9 @@ def create_quad(operator_to_check):
             temp_var_name = "_temp" + f"{temps_count}"
             temps_count += 1
             current_scope_vars.add_var(temp_var_name, res_type)
-            # Ger address of this temporal var, and set it on the vars table of temp_var_name
             new_address = get_vars_new_address(res_type, True)
             current_scope_vars.set_var_address(temp_var_name, new_address)
-            # Append a new quadruple to the quadruples list
-            # set_quad(operator, left_oper, right_oper, new_address)
             set_quad(operator, left_oper, right_oper, new_address)
-            # add to operands and types stacks the result
             operands.append(new_address)
             types.append(res_type)
         else:
@@ -338,7 +333,6 @@ def get_vars_new_address(var_type, is_temp = False, space = 1, other_scope = Non
     else:
         scope = current_scope
     if is_temp:
-        # temporal_types_map = 
         mem_count.set_count('temp', var_type, space)
         return get_temporal_types_map(mem_count)[var_type]
     if(scope == 'program'):
@@ -354,7 +348,6 @@ def get_var_directory(var_ID):
     global scopes
     global current_scope
     directory_var = scopes.get_vars_table(current_scope).get_one(var_ID)
-    # if 'not_in_directory' received, check the global scope
     if (directory_var == None):
         directory_var = scopes.get_vars_table('program').get_one(var_ID)
         if (directory_var == None):
@@ -372,23 +365,17 @@ def create_temp_address(type):
     current_scope_vars = scopes.get_vars_table(current_scope)
     temp_var_name = f"_temp{temps_count}"
     temps_count += 1
-    # Create temp var on table of vars
     current_scope_vars.add_var(temp_var_name, 'float')
-    # Ger address of this temporal var, and set it on the vars table of temp_var_name
     new_address = get_vars_new_address(type, True)
     current_scope_vars.set_var_address(temp_var_name, new_address)
     return new_address
 
 def create_quad_statistics(arr_ID, quadruple_str):
     current_var = get_var_directory(arr_ID)
-    # Validate the var is an array and of integer/float type
     if (current_var['is_array']) or (current_var['type'] in ['int', 'float']):    
-        # Create a temporal variable, this is where the result will be saved
         result_address = create_temp_address('float')
-        # Add it to stacks so it can be used on a expression or else
         operands.append(result_address)
         types.append('float')
-        # Create special function quadruple
         set_quad(quadruple_str, current_var['arr_size'], current_var['address'], result_address)
     else:
         print_error('The {quadruple_str} function only accepts an array of floats or integers.', '')
@@ -545,7 +532,7 @@ def p_np_quad_logical(p):
 def p_np_set_expression(p):
     '''np_set_expression : '''
     global operators, operands, types
-    operator = operators.pop()          # = 
+    operator = operators.pop()
     right_oper = operands.pop()
     right_type = types.pop()
     left_oper = operands.pop()
@@ -634,8 +621,6 @@ def p_np_for_end(p):
         set_quad('+', for_value, for_length, for_value)
         end_pos = jumps.pop()
         set_quad('GOTO', -1, -1, jumps.pop())
-
-        # Update the GOTOV quadruple
         quadruples[end_pos].set_result(len(quadruples))
     else:
         print_error(f'Type mismatch: Cannot perform operation + on {for_var_type} and int', '')
