@@ -8,6 +8,27 @@ from quadruples import Quadruple
 from memory import Memory
 from collections import deque
 
+# Variables
+
+scopes = Scopes_Directory()
+current_scope = ''
+
+variables = deque()
+operators = deque()
+operands = deque()
+types = deque()
+jumps = deque()
+quadruples = [];
+temps_count = 0
+
+params_count = 0
+params_stack = deque()
+func_call_IDs = deque()
+current_func_call_ID = None
+
+is_array = False
+arr_size = 0
+
 # Parser
 
 def p_program(p):
@@ -41,21 +62,33 @@ def p_vars_3(p):
         | ID COLON type np_add_vars SCOLON'''
 
 def p_type(p):
-    '''type : INT type_1
-        | CHAR type_1
-        | FLOAT type_1
-        | BOOL type_1'''
+    '''type : INT array
+        | CHAR array
+        | FLOAT array
+        | BOOL array'''
     p[0] = p[1]
 
 def p_array(p):
     '''array : LBRACKET CTEI RBRACKET
         | epsilon'''
+    global operands, types, mem_count, is_array, arr_size
+    if (p[1] != '['):
+        is_array = False
+        arr_size = None
+    else:
+        is_array = True
+        arr_size = p[2]
+        
+        if arr_size >= 1:
+            create_cteint_address(arr_size)
+        else:
+            print_error(f'Array size should be greater than 1', '')
 
 def p_function(p):
-    '''function : FUNCTION ID COLON return_type np_new_scope LPAREN parameters RPAREN block
-        | FUNCTION ID COLON return_type np_new_scope LPAREN parameters RPAREN vars block
-        | FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN block
-        | FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN vars block'''
+    '''function : FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN np_func_start block np_func_end
+        | FUNCTION ID COLON return_type np_new_scope LPAREN parameters RPAREN np_func_start block np_func_end
+        | FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN vars np_func_start block np_func_end
+        | FUNCTION ID COLON return_type np_new_scope LPAREN parameters RPAREN vars np_func_start block np_func_end'''
     p[0] = None
 
 def p_return_type(p):
@@ -64,8 +97,8 @@ def p_return_type(p):
     p[0] = p[1]
 
 def p_parameters(p):
-    '''parameters : ID COLON type np_add_vars COMMA parameters
-        | ID COLON type np_add_vars'''
+    '''parameters : ID COLON type np_add_vars np_add_params_type
+        | ID COLON type np_add_vars np_add_params_type COMMA parameters'''
 
 def p_function_call_return(p):
     '''function_call_return : ID LPAREN RPAREN
@@ -83,14 +116,14 @@ def p_return(p):
     '''return : RETURN expression SCOLON'''
 
 def p_statements(p):
-    '''statements : return statements1
-        | assignment statements1
-        | condition statements1
-        | repetition statements1
-        | reading statements1
-        | writing statements1
-        | plot statements1
-        | void_function_call statements1'''
+    '''statements : return statements_2
+        | assignment statements_2
+        | condition statements_2
+        | repetition statements_2
+        | reading statements_2
+        | writing statements_2
+        | plot statements_2
+        | function_call_void statements_2'''
     p[0] = (p[1], p[2])
 
 def p_statistics(p):
@@ -107,7 +140,7 @@ def p_statements_2(p):
 
 def p_assignment(p):
     '''assignment : ID np_add_id EQUALS np_add_operator expression np_set_expression SCOLON
-        | ID np_add_id LBRACKET expression RBRACKET EQUALS np_add_operator expression np_set_expression SCOLON'''
+        | ID np_add_id LBRACKET np_check_is_array expression np_verify_array_dim RBRACKET np_get_array_address EQUALS np_add_operator expression np_set_expression SCOLON'''
 
 def p_condition(p):
     '''condition : IF LPAREN expression RPAREN np_if_gotof block ELSE np_else_goto block np_if_end_gotof
@@ -150,10 +183,10 @@ def p_term_2(p):
         | DIVIDE np_add_operator term'''
 
 def p_factor(p):
-    '''factor : LPAREN np_open_paren expression RPAREN np_close_paren
-        | ID LBRACKET expression RBRACKET
-        | function_call_return
+    '''factor : LPAREN np_open_paren expression RPAREN np_close_paren 
+        | ID np_add_id LBRACKET np_check_is_array expression np_verify_array_dim RBRACKET np_get_array_address
         | factor_2
+        | function_call_return
         | statistics'''
 
 def p_factor_2(p):
@@ -193,8 +226,8 @@ def p_read(p):
     '''read : READ LPAREN read_2 RPAREN np_set_read_quad SCOLON'''
 
 def p_read_2(p):
-    '''read_2 : ID np_add_id
-        | ID np_add_id LBRACKET expression RBRACKET'''
+    '''read_2 : ID np_add_id LBRACKET np_check_is_array expression np_verify_array_dim RBRACKET np_get_array_address
+        | ID np_add_id'''
 
 def p_mean(p):
     '''mean : MEAN LPAREN ID RPAREN'''
@@ -225,30 +258,6 @@ def p_error(token):
 
 parser = yacc.yacc()
 
-
-
-
-
-# Variables
-
-scopes = Scopes_Directory()
-current_scope = ''
-
-variables = deque()
-operators = deque()
-operands = deque()
-types = deque()
-jumps = deque()
-quadruples = [];
-temps_count = 0
-
-params_count = 0
-params_stack = deque()
-func_call_IDs = deque()
-current_func_call_ID = None
-
-is_array = False
-arr_size = 0
 
 
 # Functions
