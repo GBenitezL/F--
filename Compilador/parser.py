@@ -19,7 +19,6 @@ operands = deque()
 types = deque()
 jumps = deque()
 quadruples = [];
-temps_count = 0
 
 params_count = 0
 params_stack = deque()
@@ -29,21 +28,26 @@ current_func_call_ID = None
 is_array = False
 arr_size = 0
 
+constants_table = {}
+mem_count = Memory()
+temps_count = 0
+
+
 # Parser
 
 def p_program(p):
-    '''program : PROGRAM np_global_scope ID SCOLON program_2 np_end_program
+    '''program : PROGRAM ID np_global_scope SCOLON program_2 np_end_program
         | PROGRAM ID np_global_scope SCOLON vars program_2 np_end_program'''
     p[0] = 'Parsed Succesfully'
 
 def p_program_2(p):
-    '''program_2 : function program_2
-        | main_block'''
+    '''program_2 : main_block
+        | function program_2'''
     p[0] = None
 
 def p_main_block(p):
-    '''main_block : MAIN np_main_scope LPAREN RPAREN block np_end_main
-        | MAIN np_main_scope LPAREN RPAREN vars block np_end_main'''
+    '''main_block : MAIN np_main_scope LPAREN RPAREN vars block np_end_main
+        | MAIN np_main_scope LPAREN RPAREN block np_end_main'''
 
 def p_block(p):
     '''block : LBRACE statements RBRACE
@@ -54,8 +58,8 @@ def p_vars(p):
     p[0] = ('var', p[1])
 
 def p_vars_2(p):
-    '''vars_2 : VAR vars_3 vars_2
-        | VAR vars_3'''
+    '''vars_2 : VAR vars_3 
+        | VAR vars_3 vars_2'''
 
 def p_vars_3(p):
     '''vars_3 : ID np_append_vars COMMA vars_3
@@ -92,8 +96,8 @@ def p_function(p):
     p[0] = None
 
 def p_return_type(p):
-    '''return_type : VOID
-        | type'''
+    '''return_type : type
+        | VOID'''
     p[0] = p[1]
 
 def p_parameters(p):
@@ -101,27 +105,27 @@ def p_parameters(p):
         | ID COLON type np_add_vars np_add_params_type COMMA parameters'''
 
 def p_function_call_return(p):
-    '''function_call_return : ID LPAREN RPAREN
-        | ID LPAREN function_parameters RPAREN'''
+    '''function_call_return : ID LPAREN np_check_func_call np_func_end_params RPAREN
+        | ID LPAREN np_check_func_call function_parameters np_func_end_params RPAREN'''
 
 def p_function_call_void(p):
-    '''function_call_void : ID LPAREN RPAREN SCOLON
-        | ID LPAREN function_parameters RPAREN SCOLON'''
+    '''function_call_void :  ID LPAREN np_check_func_call np_func_end_params RPAREN SCOLON
+        | ID LPAREN np_check_func_call function_parameters np_func_end_params RPAREN SCOLON'''
 
 def p_function_parameters(p):
-    '''function_parameters : expression
-        | expression COMMA function_parameters'''
+    '''function_parameters : expression np_add_func_call_param
+        | expression np_add_func_call_param COMMA function_parameters'''
 
 def p_return(p):
-    '''return : RETURN expression SCOLON'''
+    '''return : RETURN expression np_set_return_quad SCOLON'''
 
 def p_statements(p):
     '''statements : return statements_2
         | assignment statements_2
         | condition statements_2
-        | repetition statements_2
-        | reading statements_2
-        | writing statements_2
+        | loop statements_2
+        | read statements_2
+        | write statements_2
         | plot statements_2
         | function_call_void statements_2'''
     p[0] = (p[1], p[2])
@@ -208,10 +212,10 @@ def p_loop(p):
         | while_loop'''
 
 def p_while_loop(p):
-    '''while_loop : WHILE LPAREN expression RPAREN block'''
+    '''while_loop : WHILE np_while_start LPAREN expression RPAREN np_while_expression block np_while_end'''
 
 def p_for_loop(p):
-    '''for_loop : FOR LPAREN ID EQUALS expression SCOLON expression SCOLON expression RPAREN block'''
+    '''for_loop : FOR LPAREN ID np_add_id EQUALS np_add_operator expression np_for_expression SCOLON expression np_for_limit SCOLON expression RPAREN block np_for_end'''
 
 def p_write(p):
     '''write : PRINT LPAREN write_2 RPAREN SCOLON'''
@@ -230,22 +234,22 @@ def p_read_2(p):
         | ID np_add_id'''
 
 def p_mean(p):
-    '''mean : MEAN LPAREN ID RPAREN'''
+    '''mean : MEAN LPAREN ID RPAREN np_set_mean_quad'''
 
 def p_median(p):
-    '''median : MEDIAN LPAREN ID RPAREN'''
+    '''median : MEDIAN LPAREN ID RPAREN np_set_median_quad'''
 
 def p_variance(p):
-    '''variance : VARIANCE LPAREN ID RPAREN'''
+    '''variance : VARIANCE LPAREN ID RPAREN np_set_variance_quad'''
 
 def p_standard_deviation(p):
-    '''standard_deviation : STD LPAREN ID RPAREN'''
+    '''standard_deviation : STD LPAREN ID RPAREN np_set_std_quad'''
 
 def p_rand(p):
-    '''rand : RAND LPAREN CTEI COMMA CTEI RPAREN'''
+    '''rand : RAND LPAREN CTEI COMMA CTEI RPAREN np_set_rand_quad'''
 
 def p_plot(p):
-    '''plot : PLOT LPAREN ID COMMA ID RPAREN SCOLON'''
+    '''plot : PLOT LPAREN ID COMMA ID RPAREN np_set_plot_quad SCOLON'''
 
 def p_epsilon(p):
     '''epsilon : '''
@@ -255,8 +259,6 @@ def p_error(token):
     print(f"Syntax Error: {token.value!r}", token)
     token.lexer.skip(1)
     sys.exit()
-
-parser = yacc.yacc()
 
 
 
@@ -582,16 +584,16 @@ def p_np_if_gotof(p):
 def p_np_if_end_gotof(p):
     '''np_if_end_gotof : '''
     global jumps, quadruples
-    old_quadruple = quadruples[jumps.pop()]
-    old_quadruple.set_result(len(quadruples))
+    old_quad = quadruples[jumps.pop()]
+    old_quad.set_result(len(quadruples))
 
 
 def p_np_else_goto(p):
     '''np_else_goto : '''
     set_quad('GOTO', -1, -1, -1)
-    old_quadruple = quadruples[jumps.pop()]
+    old_quad = quadruples[jumps.pop()]
     jumps.append(len(quadruples) - 1)
-    old_quadruple.set_result(len(quadruples))
+    old_quad.set_result(len(quadruples))
 
 def p_np_for_expression(p):
     '''np_for_expression : '''
@@ -672,6 +674,12 @@ def p_np_end_program(p):
     '''np_end_program : '''
     set_quad('END', -1, -1, -1)
 
+def p_np_set_read_quad(p):
+    '''np_set_read_quad : '''
+    global operands, types
+    var = operands.pop()
+    set_quad('READ', -1, data_type_IDs[types.pop()], var)
+
 def p_np_add_params_type(p):
     '''np_add_params_type : '''
     global scopes, current_scope
@@ -747,6 +755,65 @@ def p_np_func_end_params(p):
         operands.append(new_address)
         types.append(fun_return_type)
 
+def p_np_set_return_quad(p):
+    '''np_set_return_quad : '''
+    global current_scope, scopes, operands, types
+    func_return_type = scopes.get_return_type(current_scope)
+    if (func_return_type == types.pop()):
+        set_quad('RETURN', -1, -1, operands.pop())
+    else:
+        print_error(f'Function {current_scope} must return a value of type {func_return_type}', '')
+
+#Statistical Functions
+
+def p_np_set_mean_quad(p):
+    '''np_set_mean_quad : '''
+    arr_ID = p[-2]
+    create_quad_statistics(arr_ID, 'MEAN')
+
+def p_np_set_median_quad(p):
+    '''np_set_median_quad : '''
+    arr_ID = p[-2]
+    create_quad_statistics(arr_ID, 'MEDIAN')
+    
+def p_np_set_rand_quad(p):
+    '''np_set_rand_quad : '''
+    result_address = create_temp_address('int')
+    # Add it to stacks so it can be used on a expression or else
+    lower_limit = p[-4]
+    upper_limit = p[-2]
+    operands.append(result_address)
+    types.append('int')
+    # Create special function quadruple
+    set_quad('RAND', lower_limit, upper_limit, result_address)
+    
+def p_np_set_variance_quad(p):
+    '''np_set_variance_quad : '''
+    arr_ID = p[-2]
+    create_quad_statistics(arr_ID, 'VARIANCE')
+    
+def p_np_set_std_quad(p):
+    '''np_set_std_quad : '''
+    arr_ID = p[-2]
+    create_quad_statistics(arr_ID, 'STD')
+
+def p_np_set_plot_quad(p):
+    '''np_set_plot_quad : '''
+    
+    x_array_var = get_var_directory(p[-4])
+    y_array_var = get_var_directory(p[-2])
+
+    if x_array_var['is_array'] and y_array_var['is_array']:
+        if (x_array_var['type'] == 'int' or x_array_var['type'] == 'float') and (y_array_var['type'] == 'int' or y_array_var['type'] == 'float'):
+                if x_array_var['arr_size'] == y_array_var['arr_size']:
+                    set_quad('PLOT', x_array_var['address'], y_array_var['address'], x_array_var['arr_size'])
+                else:
+                    print_error(f'Arrays{p[-4]} and {p[-2]} must be of equal length', '')
+        else:
+            print_error('The plot function requires 2 arrays of type int or float', '')
+    else:
+        print_error('The plot function requires 2 arrays of type int or float', '')
+
 # Arrays
 
 def p_np_check_is_array(p):
@@ -792,3 +859,5 @@ def p_np_get_array_address(p):
     operators.pop()
 
     operands.append(pointer_address)
+
+parser = yacc.yacc()
