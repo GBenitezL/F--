@@ -5,6 +5,7 @@ from semantic_cube import Semantic_Cube
 from directory import Scopes_Directory, Vars
 from utils import data_type_IDs, operator_IDs, print_error
 from quadruples import Quadruple
+from memory import Memory
 from collections import deque
 
 # Parser
@@ -233,8 +234,6 @@ scopes = Scopes_Directory()
 current_scope = ''
 
 variables = deque()
-variable_parameters = deque()
-
 operators = deque()
 operands = deque()
 types = deque()
@@ -242,12 +241,8 @@ jumps = deque()
 quadruples = [];
 temps_count = 0
 
-bool_arr = False
+is_array = False
 arr_size = 0
-
-
-
-
 
 # Functions
 
@@ -328,7 +323,7 @@ def p_np_new_scope(p):
     if return_type != 'void':
         global_scope_vars = scopes.get_vars_table('program')
         global_scope_vars.add_var(function_id, return_type)
-        global_scope_vars.set_arrray_values(function_id, bool_arr, arr_size)
+        global_scope_vars.set_arrray_values(function_id, is_array, arr_size)
 
 
 def p_np_append_vars (p):
@@ -422,41 +417,39 @@ def p_np_quad_logical(p):
 
 def p_np_set_expression(p):
     '''np_set_expression : '''
-    global operators, operands, types, quadruples
+    global operators, operands, types
     operator = operators.pop()          # = 
     right_oper = operands.pop()
     right_type = types.pop()
     left_oper = operands.pop()
     left_type = types.pop()
-    res_type = Semantic_Cube.getType(operator, right_type, left_type)
-    if res_type == 'Error':
-        print_error(f'Error: Type mismatch on {right_type}, and {left_type} with a {operator}', '')
-    set_quad(operator, right_oper, -1, left_oper)
+    if Semantic_Cube.getType(operator, right_type, left_type) != 'Error':
+        set_quad(operator, right_oper, -1, left_oper)
+    else:
+        print_error(f'Cannot perform operation {operator} to {left_type} and {right_type}', '')
 
 def p_np_if_gotof(p):
     '''np_if_gotof : '''
     global operands, types, quadruples, jumps
-    res_type = types.pop()
-    if res_type != 'bool':
-        print_error(f'Error: Type mismatch. Expected bool, received {res_type}', '')
-    res = operands.pop()
-    set_quad('GOTOF', res, -1, -1)
-    jumps.append(len(quadruples) - 1)
+    res_if_type = types.pop()
+    if res_if_type == 'bool':
+        set_quad('GOTOF', operands.pop(), -1, -1)
+        jumps.append(len(quadruples) - 1)
+    else:
+        print_error(f'Conditional statement must be of type bool', '')
 
 def p_np_if_end_gotof(p):
     '''np_if_end_gotof : '''
     global jumps, quadruples
-    jump_end_pos = jumps.pop()
-    old_quadruple = quadruples[jump_end_pos]
+    old_quadruple = quadruples[jumps.pop()]
     old_quadruple.set_result(len(quadruples))
 
 
 def p_np_else_goto(p):
     '''np_else_goto : '''
     set_quad('GOTO', -1, -1, -1)
-    jump_end_pos = jumps.pop()
+    old_quadruple = quadruples[jumps.pop()]
     jumps.append(len(quadruples) - 1)
-    old_quadruple = quadruples[jump_end_pos]
     old_quadruple.set_result(len(quadruples))
 
 def p_np_end_main(p):
