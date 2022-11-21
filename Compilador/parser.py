@@ -657,3 +657,78 @@ def p_np_end_main(p):
 def p_np_end_program(p):
     '''np_end_program : '''
     set_quad('END', -1, -1, -1)
+
+def p_np_add_params_type(p):
+    '''np_add_params_type : '''
+    global scopes, current_scope
+    param_ID = p[-4]
+    param_type = p[-2]
+    current_scope_params = scopes.get_parameters(current_scope)
+    current_scope_IDs_params = scopes.get_parameter_IDs(current_scope)
+    current_scope_IDs_params.append(param_ID)
+    current_scope_params.append(param_type)
+
+def p_np_func_start(p):
+    '''np_func_start : '''
+    global scopes, current_scope, quadruples
+    scopes.set_quad_count(current_scope, len(quadruples))
+
+def p_np_func_end(p):
+    '''np_func_end : '''
+    global scopes, current_scope, mem_count
+    set_quad('ENDFUNC', -1, -1, -1)
+    scopes.set_size(current_scope)
+    mem_count.reset_local_counters()
+    mem_count.reset_temp_counters()
+
+def p_np_check_func_call(p):
+    '''np_check_func_call : '''
+    global scopes, params_stack, current_func_call_ID, func_call_IDs, operators
+    current_func_call_ID = p[-2]
+    if scopes.exists(current_func_call_ID):    
+        params_stack.append(0)
+        func_call_IDs.append(current_func_call_ID)
+        set_quad('ERA', -1, -1, current_func_call_ID)
+        operators.append('~')
+    else:
+        print_error(f'Function {current_func_call_ID} is not defined', '')
+
+def p_np_add_func_call_param(p):
+    '''np_add_func_call_param : '''
+    global types, params_stack, func_call_IDs, scopes
+    param_type = types.pop()
+    params_count = params_stack.pop()
+    current_func_call_ID = func_call_IDs[-1]
+    function_call_params = scopes.get_parameters(current_func_call_ID)
+    
+    if(function_call_params[params_count] == param_type):
+        set_quad('PARAM', operands.pop(), -1, f'_param_{params_count}')
+        params_count += 1
+        params_stack.append(params_count)
+    else:
+        print_error(f'The {params_count + 1}º argument of function {current_func_call_ID} should be of type {function_call_params[params_count]}', '')
+    
+def p_np_func_end_params(p):
+    '''np_func_end_params : '''
+    global params_stack, scopes, current_scope, temps_count, func_call_IDs, operators
+    current_func_call_ID = func_call_IDs.pop()
+    size_of_params = len(scopes.get_parameters(current_func_call_ID))
+    operators.pop()
+    if size_of_params == params_stack.pop():
+        initial_function_addres = scopes.get_quad_count(current_func_call_ID)
+        set_quad('GOSUB', current_func_call_ID, -1, initial_function_addres)
+    else:
+        print_error(f'''Function {current_func_call_ID}, requires {size_of_params} arguments''', '')
+    
+    fun_return_type = scopes.get_return_type(current_func_call_ID)
+    if fun_return_type != 'void':
+        current_scope_vars = scopes.get_vars_table(current_scope)
+        temp_var_name = f"_temp{temps_count}"
+        temps_count += 1
+        current_scope_vars.add_var(temp_var_name, fun_return_type)
+        new_address = get_vars_new_address(fun_return_type, True)
+        current_scope_vars.set_var_address(temp_var_name, new_address)
+        directory_var = scopes.get_vars_table('program').get_one(current_func_call_ID)
+        set_quad('=', directory_var['address'], -1, new_address)
+        operands.append(new_address)
+        types.append(fun_return_type)
