@@ -242,6 +242,11 @@ jumps = deque()
 quadruples = [];
 temps_count = 0
 
+params_count = 0
+params_stack = deque()
+func_call_IDs = deque()
+current_func_call_ID = None
+
 is_array = False
 arr_size = 0
 
@@ -732,3 +737,49 @@ def p_np_func_end_params(p):
         set_quad('=', directory_var['address'], -1, new_address)
         operands.append(new_address)
         types.append(fun_return_type)
+
+# Arrays
+
+def p_np_check_is_array(p):
+    '''np_check_is_array : '''
+    global operands, types, operators
+    operands.pop()   
+    types.pop()
+    
+    arr_ID = p[-2]
+    if(arr_ID is None):
+        arr_ID = p[-3]
+    
+    current_var = get_var_directory(arr_ID)
+    if (current_var['is_array']):
+        operands.append(current_var['address'])
+        types.append(current_var['type'])
+        operators.append('|')
+    else:
+        print_error(f'Array {arr_ID} is not defined.', '')
+    
+
+def p_np_verify_array_dim(p):
+    '''np_verify_array_dim : '''
+    global operands, constants_table, types
+    accessing_array_type = types[-1]
+    arr_ID = p[-4]
+    if (arr_ID is None): 
+        arr_ID = p[-5]
+    if (accessing_array_type == 'int'):
+        set_quad('VERIFY', operands[-1], constants_table[0], constants_table[get_var_directory(arr_ID)['arr_size']])
+    else:
+        print_error(f'Array {arr_ID} must be accesed using an int value', '')
+
+def p_np_get_array_address(p):
+    '''np_get_array_address : '''
+    global operands, types, constants_table
+    accessing_array_value = operands.pop()
+    types.pop()
+    array_init_address_const_address = create_cteint_address(operands.pop())
+    pointer_address = create_new_pointer_address()
+    
+    set_quad('+', accessing_array_value, array_init_address_const_address, pointer_address)
+    operators.pop()
+
+    operands.append(pointer_address)
