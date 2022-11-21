@@ -37,14 +37,14 @@ def p_vars_2(p):
         | VAR vars_3'''
 
 def p_vars_3(p):
-    '''vars_3 : ID COLON type np_add_vars SCOLON
-        |  ID np_append_vars COMMA vars_3'''
+    '''vars_3 : ID np_append_vars COMMA vars_3
+        | ID COLON type np_add_vars SCOLON'''
 
 def p_type(p):
-    '''type : INT array
-        | FLOAT array
-        | CHAR array
-        | BOOL array'''
+    '''type : INT type_1
+        | CHAR type_1
+        | FLOAT type_1
+        | BOOL type_1'''
     p[0] = p[1]
 
 def p_array(p):
@@ -52,8 +52,8 @@ def p_array(p):
         | epsilon'''
 
 def p_function(p):
-    '''function : FUNCTION ID COLON return_type np_new_scope LPAREN params RPAREN block
-        | FUNCTION ID COLON return_type np_new_scope LPAREN params RPAREN vars block
+    '''function : FUNCTION ID COLON return_type np_new_scope LPAREN parameters RPAREN block
+        | FUNCTION ID COLON return_type np_new_scope LPAREN parameters RPAREN vars block
         | FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN block
         | FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN vars block'''
     p[0] = None
@@ -63,34 +63,34 @@ def p_return_type(p):
         | type'''
     p[0] = p[1]
 
-def p_params(p):
-    '''params : ID COLON type np_add_vars COMMA params
+def p_parameters(p):
+    '''parameters : ID COLON type np_add_vars COMMA parameters
         | ID COLON type np_add_vars'''
 
 def p_function_call_return(p):
     '''function_call_return : ID LPAREN RPAREN
-        | ID LPAREN function_params RPAREN'''
+        | ID LPAREN function_parameters RPAREN'''
 
 def p_function_call_void(p):
     '''function_call_void : ID LPAREN RPAREN SCOLON
-        | ID LPAREN function_params RPAREN SCOLON'''
+        | ID LPAREN function_parameters RPAREN SCOLON'''
 
-def p_function_params(p):
-    '''function_params : expression
-        | expression COMMA function_params'''
+def p_function_parameters(p):
+    '''function_parameters : expression
+        | expression COMMA function_parameters'''
 
 def p_return(p):
     '''return : RETURN expression SCOLON'''
 
 def p_statements(p):
-    '''statements : assignment statements_2
-        | condition statements_2
-        | write statements_2
-        | read statements_2
-        | loop statements_2
-        | return statements_2
-        | function_call_void statements_2
-        | plot statements_2'''
+    '''statements : return statements1
+        | assignment statements1
+        | condition statements1
+        | repetition statements1
+        | reading statements1
+        | writing statements1
+        | plot statements1
+        | void_function_call statements1'''
     p[0] = (p[1], p[2])
 
 def p_statistics(p):
@@ -110,23 +110,23 @@ def p_assignment(p):
         | ID np_add_id LBRACKET expression RBRACKET EQUALS np_add_operator expression np_set_expression SCOLON'''
 
 def p_condition(p):
-    '''condition : IF LPAREN np_open_paren expression RPAREN block
-        |  IF LPAREN expression RPAREN block ELSE block'''
+    '''condition : IF LPAREN expression RPAREN np_if_gotof block ELSE np_else_goto block np_if_end_gotof
+        | IF LPAREN expression RPAREN np_if_gotof block np_if_end_gotof'''
 
 def p_expression(p):
     '''expression : exp
-        | comparison
-        | logical
+        | logical np_quad_logical
+        | comparison np_quad_comparison
     '''
     p[0] = p[1]
 
 def p_comparison(p):
-    '''comparison : exp LT exp
-        | exp LE exp
-        | exp GT exp
-        | exp GE exp
-        | exp EQ exp
-        | exp NE exp'''
+    '''comparison : exp EQ np_add_operator exp
+        | exp NE np_add_operator exp
+        | exp LT np_add_operator exp
+        | exp GT np_add_operator exp
+        | exp LE np_add_operator exp
+        | exp GE np_add_operator exp'''
     p[0] = (p[1], p[2], p[3])
 
 def p_logical(p):
@@ -142,12 +142,12 @@ def p_exp_2(p):
         | MINUS np_add_operator exp'''
 
 def p_term(p):
-    '''term : factor
-        | factor term_2'''
+    '''term : factor np_quad_times_div
+        | factor np_quad_times_div term_2'''
 
 def p_term_2(p):
-    '''term_2 : TIMES term
-        | DIVIDE term'''
+    '''term_2 : TIMES np_add_operator term
+        | DIVIDE np_add_operator term'''
 
 def p_factor(p):
     '''factor : LPAREN np_open_paren expression RPAREN np_close_paren
@@ -158,16 +158,17 @@ def p_factor(p):
 
 def p_factor_2(p):
     '''factor_2 : PLUS constant
-        | MINUS constant
+        | MINUS np_set_as_negative constant
         | constant'''
 
 def p_constant(p):
-    '''constant : ID
-        | CTEI
-        | CTEF
-        | CTEC
-        | TRUE
-        | FALSE'''
+    '''constant : ID np_add_id
+        | CTEI np_add_int
+        | CTEF np_add_float
+        | CTEC np_add_char
+        | TRUE np_add_bool
+        | FALSE np_add_bool'''
+    p[0] = p[1]
 
 def p_loop(p):
     '''loop : for_loop
@@ -183,17 +184,17 @@ def p_write(p):
     '''write : PRINT LPAREN write_2 RPAREN SCOLON'''
 
 def p_write_2(p):
-    '''write_2 : expression COMMA write_2
-        | CTESTRING COMMA write_2
-        | expression
-        | CTESTRING'''
+    '''write_2 : expression np_set_print_quad_exp COMMA write_2
+        | expression np_set_print_quad_exp
+        | CTESTRING  np_set_print_quad_str COMMA write_2
+        | CTESTRING np_set_print_quad_str'''
 
 def p_read(p):
-    '''read : READ LPAREN read_2 RPAREN SCOLON'''
+    '''read : READ LPAREN read_2 RPAREN np_set_read_quad SCOLON'''
 
 def p_read_2(p):
-    '''read_2 : ID
-        | ID LBRACKET expression RBRACKET'''
+    '''read_2 : ID np_add_id
+        | ID np_add_id LBRACKET expression RBRACKET'''
 
 def p_mean(p):
     '''mean : MEAN LPAREN ID RPAREN'''
@@ -244,19 +245,20 @@ temps_count = 0
 is_array = False
 arr_size = 0
 
+
 # Functions
 
 def evaluate(p):
     print('Evaluate:', p)
 
-def create_scope(scope_id, return_type):
+def create_scope(scope_ID, return_type):
       # Create the global scope
     global scopes, current_scope
-    scopes.add_new_scope(scope_id, return_type, Vars(scope_id))
-    current_scope = scope_id
+    scopes.add_new_scope(scope_ID, return_type, Vars(scope_ID))
+    current_scope = scope_ID
 
 def create_quad(operator_to_check):
-    global quadruples, operands, operators, types, scopes, current_scope, temps_count
+    global operands, operators, types, scopes, current_scope, temps_count
     if len(operators) > 0 and (operators[-1] in operator_to_check):
         operator = operators.pop()
         right_oper = operands.pop()
@@ -265,31 +267,131 @@ def create_quad(operator_to_check):
         left_type = types.pop()
         res_type = Semantic_Cube.getType(operator, right_type, left_type)
         
-        if res_type == 'Error':
-            print_error(f'Invalid operation, type mismatch on {right_type} and {left_type} with a {operator}', 'C-16')
-        current_scope_vars = scopes.get_vars_table(current_scope)
-        temp_var_name = f"_temp{temps_count}"
-        temps_count += 1
-        current_scope_vars.add_var(temp_var_name, res_type)
-        set_quad(operator, left_oper, right_oper, temp_var_name)
-        operands.append(temp_var_name)
-        types.append(res_type)
+        if res_type != 'Error':  
+            current_scope_vars = scopes.get_vars_table(current_scope)
+            temp_var_name = "_temp" + f"{temps_count}"
+            temps_count += 1
+            current_scope_vars.add_var(temp_var_name, res_type)
+            # Ger address of this temporal var, and set it on the vars table of temp_var_name
+            new_address = get_vars_new_address(res_type, True)
+            current_scope_vars.set_var_address(temp_var_name, new_address)
+            # Append a new quadruple to the quadruples list
+            # set_quad(operator, left_oper, right_oper, new_address)
+            set_quad(operator, left_oper, right_oper, new_address)
+            # add to operands and types stacks the result
+            operands.append(new_address)
+            types.append(res_type)
+        else:
+            print_error(f'Cannot perform operation {operator} to {left_type} and {right_type}', '')
 
-def set_quad(first, second, third, fourth):
-    operator_id = operator_IDs[first]
-    new_quadruple = Quadruple(operator_id, second, third, fourth)
-    quadruples.append(new_quadruple)
+def create_cteint_address(value):
+    global mem_count, constants_table
+    if value in constants_table:
+        return constants_table[value]
+    else:
+        new_mem_address = mem_count.count_const_int
+        constants_table[value] = new_mem_address
+        mem_count.set_count('const', 'int')
+        return new_mem_address
+
+def create_new_pointer_address():
+    global mem_count
+    new_pointer_address = mem_count.count_pointers
+    mem_count.set_count('pointer', None)
+    return new_pointer_address
     
-def get_var(var_id):
-    global scopes, current_scope
-    scope_vars = scopes.get_vars_table(current_scope)
-    directory_var = scope_vars.get_one(var_id)
-    if (directory_var == 'not_in_directory'):
-        program_vars = scopes.get_vars_table('program')
-        directory_var = program_vars.get_one(var_id)
-        print_error(f'Error: Variable {var_id} not found in current or global scope', '')
+def get_global_types_map(mem_count):
+    global_types_map = {
+        'int': mem_count.count_global_int,
+        'float': mem_count.count_global_float,
+        'char': mem_count.count_global_char,
+        'bool': mem_count.count_global_bool,
+    }
+    return global_types_map
+
+
+def get_local_types_map(mem_count):
+    local_types_map = {
+        'int': mem_count.count_local_int,
+        'float': mem_count.count_local_float,
+        'char': mem_count.count_local_char,
+        'bool': mem_count.count_local_bool,
+    }
+    return local_types_map
+
+def get_temporal_types_map(mem_count):
+    local_types_map = {
+        'int': mem_count.count_temp_int,
+        'float': mem_count.count_temp_float,
+        'char': mem_count.count_temp_char,
+        'bool': mem_count.count_temp_bool,
+    }
+    return local_types_map
+
+
+   
+def get_vars_new_address(var_type, is_temp = False, space = 1, other_scope = None):
+    global current_scope
+    global mem_count
+    if other_scope is not None:
+        scope = other_scope
+    else:
+        scope = current_scope
+    if is_temp:
+        # temporal_types_map = 
+        mem_count.set_count('temp', var_type, space)
+        return get_temporal_types_map(mem_count)[var_type]
+    if(scope == 'program'):
+        global_types_map = get_global_types_map(mem_count)
+        mem_count.set_count('global', var_type, space)
+        return global_types_map[var_type]
+    local_types_map = get_local_types_map(mem_count)
+    mem_count.set_count('local', var_type, space)
+    return local_types_map[var_type]
+
+
+def get_var_directory(var_ID):
+    global scopes
+    global current_scope
+    directory_var = scopes.get_vars_table(current_scope).get_one(var_ID)
+    # if 'not_in_directory' received, check the global scope
+    if (directory_var == None):
+        directory_var = scopes.get_vars_table('program').get_one(var_ID)
+        if (directory_var == None):
+            print_error(f'Variable {var_ID} not found in current or global scope', '')
 
     return directory_var
+
+
+def set_quad(oper_ID, left_oper, right_oper, result):
+    quadruples.append(Quadruple(operator_IDs[oper_ID] , left_oper, right_oper, result))
+
+
+def create_temp_address(type):
+    global scopes, temps_count, current_scope
+    current_scope_vars = scopes.get_vars_table(current_scope)
+    temp_var_name = f"_temp{temps_count}"
+    temps_count += 1
+    # Create temp var on table of vars
+    current_scope_vars.add_var(temp_var_name, 'float')
+    # Ger address of this temporal var, and set it on the vars table of temp_var_name
+    new_address = get_vars_new_address(type, True)
+    current_scope_vars.set_var_address(temp_var_name, new_address)
+    return new_address
+
+def create_quad_statistics(arr_ID, quadruple_str):
+    current_var = get_var_directory(arr_ID)
+    # Validate the var is an array and of integer/float type
+    if (current_var['is_array']) or (current_var['type'] in ['int', 'float']):    
+        # Create a temporal variable, this is where the result will be saved
+        result_address = create_temp_address('float')
+        # Add it to stacks so it can be used on a expression or else
+        operands.append(result_address)
+        types.append('float')
+        # Create special function quadruple
+        set_quad(quadruple_str, current_var['arr_size'], current_var['address'], result_address)
+    else:
+        print_error('The {quadruple_str} function only accepts an array of floats or integers.', '')
 
 
 
@@ -297,123 +399,148 @@ def get_var(var_id):
 
 # Neuralgic Points
 
+# Linear Statements
+
 def p_np_global_scope(p):
     '''np_global_scope : '''
-    global scopes, current_scope, jumps
+    global jumps
     create_scope('program', 'void')
     set_quad('GOTO', -1, -1, -1)
     jumps.append(len(quadruples) - 1)
-
+    create_cteint_address(0)
 
 def p_np_main_scope(p):
     '''np_main_scope : '''
     global jumps
     create_scope('main', 'void')
-    main_quadruple_position = jumps.pop()
-    old_main_goto_quadruple = quadruples[main_quadruple_position]
-    old_main_goto_quadruple.set_result(len(quadruples))
-
+    quadruples[jumps.pop()].set_result(len(quadruples))
 
 def p_np_new_scope(p):
     '''np_new_scope : '''
-    global scopes, current_scope
-    function_id = p[-3]
+    global scopes
+    func_ID = p[-3]
     return_type = p[-1]
-    create_scope(function_id, return_type)
+    create_scope(func_ID, return_type)
     if return_type != 'void':
         global_scope_vars = scopes.get_vars_table('program')
-        global_scope_vars.add_var(function_id, return_type)
-        global_scope_vars.set_arrray_values(function_id, is_array, arr_size)
+        global_scope_vars.add_var(func_ID, return_type)
+        global_scope_vars.set_var_address(func_ID, get_vars_new_address(return_type, False, 1, 'program'))
+        global_scope_vars.set_arrray_values(func_ID, is_array, arr_size)
 
 
 def p_np_append_vars (p):
     '''np_append_vars : '''
     global variables
-    variables.append(p[-1])
+    var_ID = p[-1]
+    variables.append(var_ID)
 
 def p_np_add_vars(p):
     '''np_add_vars : '''
-    global scopes, current_scope, variables
-    var_id = p[-3]
+    global scopes, current_scope, is_array, arr_size, variables
+
     variables.append(p[-3])
     vars_type = p[-1]
-
+    memory_space = 1 if arr_size is None else arr_size
     while variables:
         current_scope_vars = scopes.get_vars_table(current_scope)
         current_scope_vars.add_var(variables[0], vars_type)
+        current_scope_vars.set_var_address(variables[0], get_vars_new_address(vars_type, False, memory_space))
+        current_scope_vars.set_arrray_values(variables[0], is_array, arr_size)
         variables.popleft()
 
 def p_np_add_id(p):
     '''np_add_id : '''
     global operands, types
-    # Get var instance from vars table
-    current_var = get_var(p[-1])
-    var_type = current_var['type']
-    operands.append([-1])
-    types.append(var_type)
-
+    var_ID = p[-1]
+    current_var = get_var_directory(var_ID)
+    operands.append(current_var['address'])
+    types.append(current_var['type'])
 
 def p_np_add_int(p):
     '''np_add_int : '''
-    global operands, types
-    operands.append(p[-1])
+    global operands, types, mem_count, constants_table
+    if p[-1] not in constants_table:    
+        constants_table[p[-1]] = mem_count.count_const_int
+        mem_count.set_count('const', 'int')
+    operands.append(constants_table[p[-1]])
     types.append('int')
-
 
 def p_np_add_float(p):
     '''np_add_float : '''
-    global operands, types
-    operands.append(p[-1])
+    global operands, types, mem_count, constants_table
+    if p[-1] not in constants_table:    
+        constants_table[p[-1]] = mem_count.count_const_float
+        mem_count.set_count('const', 'float')
+    operands.append(constants_table[p[-1]])
     types.append('float')
-
 
 def p_np_add_char(p):
     '''np_add_char : '''
-    global operands, types
-    operands.append(p[-1])
+    global operands, types, mem_count, constants_table
+    if p[-1] not in constants_table:    
+        constants_table[p[-1]] = mem_count.count_const_char
+        mem_count.set_count('const', 'char')
+    operands.append(constants_table[p[-1]])
     types.append('char')
-
 
 def p_np_add_bool(p):
     '''np_add_bool : '''
-    global scopes, current_scope
-    operands.append(p[-1])
+    global scopes, current_scope, mem_count, constants_table, operands, types
+    if p[-1] not in constants_table:    
+        constants_table[p[-1]] = mem_count.count_const_bool
+        mem_count.set_count('const', 'bool')
+    operands.append(constants_table[p[-1]])
     types.append('bool')
     
+def p_np_set_as_negative(p):
+    '''np_set_as_negative : '''
+    global mem_count, constants_table, operands, types, operators
+    if -1 not in constants_table:    
+        constants_table[-1] = mem_count.count_const_int
+        mem_count.set_count('const', 'int')
+    operands.append(constants_table[-1])
+    types.append('int')
+    operators.append('*')
 
 def p_np_add_operator(p):
     '''np_add_operator : '''
     global operators
-    operators.append(p[-1])
+    oper = p[-1]
+    operators.append(oper)
 
 def p_np_open_paren(p):
     '''np_open_paren : '''
     global operators
-    operators.append(p[-1])
+    paren = p[-1]
+    operators.append(paren)
 
 def p_np_close_paren(p):
     '''np_close_paren : '''
     global operators
-    if operators[-1] != '(':
-        print_error('Error: \'(\' not found in operators stack ', '')
-    operators.pop()
-
-
+    if operators[-1] == '(':
+        operators.pop()
+    else:
+        print_error('Cannot find opening parenthesis', '')
+    
 def p_np_quad_plus_minus(p):
     '''np_quad_plus_minus : '''
-    create_quad(['+', '-'])
+    oper_list = ['+', '-']
+    create_quad(oper_list)
 
 def p_np_quad_times_div(p):
     '''np_quad_times_div : '''
-    create_quad(['*', '/'])
+    oper_list = ['*', '/']
+    create_quad(oper_list)
 
 def p_np_quad_comparison(p):
     '''np_quad_comparison : '''
-    create_quad(['<', '<=', '>', '>=', '==', '!='])
+    oper_list = ['<', '<=', '>', '>=', '==', '!=']
+    create_quad(oper_list)
 
 def p_np_quad_logical(p):
     '''np_quad_logical : '''
-    create_quad(['||', '&&'])
+    oper_list = ['||', '&&']
+    create_quad(oper_list)
 
 def p_np_set_expression(p):
     '''np_set_expression : '''
@@ -427,6 +554,19 @@ def p_np_set_expression(p):
         set_quad(operator, right_oper, -1, left_oper)
     else:
         print_error(f'Cannot perform operation {operator} to {left_type} and {right_type}', '')
+
+
+def p_np_set_print_quad_str(p):
+    '''np_set_print_quad_str : '''
+    set_quad('PRINT', -1, -1, p[-1])
+
+def p_np_set_print_quad_exp(p):
+    '''np_set_print_quad_exp : '''
+    global operands, types
+    types.pop()
+    set_quad('PRINT', -1, -1, operands.pop())
+
+# Non-Linear Statements
 
 def p_np_if_gotof(p):
     '''np_if_gotof : '''
@@ -451,6 +591,77 @@ def p_np_else_goto(p):
     old_quadruple = quadruples[jumps.pop()]
     jumps.append(len(quadruples) - 1)
     old_quadruple.set_result(len(quadruples))
+
+def p_np_for_expression(p):
+    '''np_for_expression : '''
+    global operators, operands, types, quadruples, jumps
+    operator = operators.pop()
+    right_oper = operands.pop()
+    right_type = types.pop()
+    left_oper = operands.pop()
+    left_type = types.pop()
+    if right_type == 'int' and left_type == 'int' :
+        set_quad(operator, right_oper, -1, left_oper)
+        jumps.append(len(quadruples))
+        operands.append(left_oper)
+        types.append('int')
+    else:
+        print_error(f'"For" loop requires limits of type int', '')
+
+def p_np_for_limit(p):
+    ''' np_for_limit : '''
+    global operands, types, quadruples, jumps
+    result = operands.pop()
+    op_type = types.pop()
+
+    if op_type == 'bool':
+        set_quad('GOTOV', result, -1, -1)
+        jumps.append(len(quadruples) - 1)
+    else:
+        print_error(f'"For" loop requires condition of type bool', '')
+
+def p_np_for_end(p):
+    '''np_for_end : '''
+    global operands, types, quadruples
+    for_length = operands.pop()
+    if types.pop() == 'int':
+        for_value = operands.pop()
+        for_var_type = types.pop()
+    else:
+        print_error('Value for "For" loop update variable should be int', '')
+    
+    if Semantic_Cube.getType('+', for_var_type, 'int') == 'int':
+        set_quad('+', for_value, for_length, for_value)
+        end_pos = jumps.pop()
+        set_quad('GOTO', -1, -1, jumps.pop())
+
+        # Update the GOTOV quadruple
+        quadruples[end_pos].set_result(len(quadruples))
+    else:
+        print_error(f'Type mismatch: Cannot perform operation + on {for_var_type} and int', '')
+
+
+def p_np_while_start (p):
+    '''np_while_start : '''
+    jumps.append(len(quadruples))
+
+def p_np_while_expression (p):
+    '''np_while_expression : '''
+    exp_type = types.pop()
+    if exp_type == 'bool': 
+        set_quad('GOTOF', operands.pop(), -1, -1)
+        jumps.append(len(quadruples) - 1)
+    else:
+        print_error(f'Conditional statement must be of type bool', '')
+
+def p_np_while_end (p):
+    '''np_while_end : '''
+    end_pos = jumps.pop()
+    set_quad('GOTO', -1, -1, jumps.pop())
+    quadruples[end_pos].set_result(len(quadruples))
+
+
+# Functions
 
 def p_np_end_main(p):
     '''np_end_main : '''
