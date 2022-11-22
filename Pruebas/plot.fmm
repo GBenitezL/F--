@@ -1,0 +1,41 @@
+program myRLike;
+var datay: int[10];
+var datax: int[10];
+var arraySize: int;
+
+function fillArrayData: void()
+var i: int;
+{
+  for(i = 0; i == arraySize; 1) {
+    datay[i] = rand(0, 30);
+    print(datay[i], " ");
+  }
+  print("");
+}
+
+function fillArrayData2: void()
+var i: int;
+{
+  for(i = 0; i == arraySize; 1) {
+    datax[i] = rand(1, 5);
+    print(datax[i], " ");
+  }
+  print("");
+}
+
+main()
+{
+  arraySize = 10;
+  print("Los dos arreglos de datos:");
+  fillArrayData();
+  fillArrayData2();
+  
+  plot(datay, datax);
+
+}
+
+
+
+
+
+

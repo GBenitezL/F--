@@ -1,0 +1,7 @@
+program test;
+var data: int[10][20]
+
+main()
+{
+    
+}

@@ -3,7 +3,6 @@ from Compilador.utils import print_error
 class Semantic_Cube:
     
     def getType(symbol, type1, type2):
-        # print('checking', symbol, type1, type2)
         basic_symbols = ['+', '-', '*']
         comparison_symbols = ['<', '<=', '>', '>=', '==', '!=']
         if(symbol == '='):

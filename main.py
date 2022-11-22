@@ -25,7 +25,6 @@ def main(argv):
     # print_constants()
     # print_scopes()
     
-    # Start intermediate code execution on virtual_machine
     start_vm()
     
 if __name__ == "__main__":

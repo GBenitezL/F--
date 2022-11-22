@@ -8,32 +8,7 @@ from Compilador.quadruples import Quadruple
 from Compilador.memory import Memory
 from collections import deque
 
-# Variables
-
-scopes = Scopes_Directory()
-current_scope = ''
-
-variables = deque()
-operators = deque()
-operands = deque()
-types = deque()
-jumps = deque()
-quadruples = [];
-
-params_count = 0
-params_stack = deque()
-func_call_IDs = deque()
-current_func_call_ID = None
-
-is_array = False
-arr_size = 0
-
-constants_table = {}
-mem_count = Memory()
-temps_count = 0
-
-
-# Parser
+##### Parser #####
 
 def p_program(p):
     '''program : PROGRAM ID np_global_scope SCOLON program_2 np_end_program
@@ -267,8 +242,32 @@ def p_error(token):
     sys.exit()
 
 
+##### Variables #####
 
-# Functions
+scopes = Scopes_Directory()
+current_scope = ''
+
+variables = deque()
+operators = deque()
+operands = deque()
+types = deque()
+jumps = deque()
+quadruples = [];
+
+params_count = 0
+params_stack = deque()
+func_call_IDs = deque()
+current_func_call_ID = None
+
+is_array = False
+arr_size = 0
+
+constants_table = {}
+mem_count = Memory()
+temps_count = 0
+
+
+###### Utility Functions #####
 
 def evaluate(p):
     print('Evaluate:', p)
@@ -301,6 +300,9 @@ def create_quad(operator_to_check):
         else:
             print_error(f'Cannot perform operation {operator} to {left_type} and {right_type}', '')
 
+def set_quad(oper_ID, left_oper, right_oper, result):
+    quadruples.append(Quadruple(operator_IDs[oper_ID] , left_oper, right_oper, result))
+
 def create_cteint_address(value):
     global mem_count, constants_table
     if value in constants_table:
@@ -317,6 +319,57 @@ def create_new_pointer_address():
     mem_count.set_count('pointer', None)
     return new_pointer_address
     
+   
+def get_vars_new_address(var_type, is_temp = False, space = 1, other_scope = None):
+    global current_scope
+    global mem_count
+    if other_scope is not None:
+        scope = other_scope
+    else:
+        scope = current_scope
+    if is_temp:
+        mem_count.set_count('temp', var_type, space)
+        return get_temporal_types_map(mem_count)[var_type]
+    if(scope == 'program'):
+        global_types_map = get_global_types_map(mem_count)
+        mem_count.set_count('global', var_type, space)
+        return global_types_map[var_type]
+    local_types_map = get_local_types_map(mem_count)
+    mem_count.set_count('local', var_type, space)
+    return local_types_map[var_type]
+
+
+def get_var_directory(var_ID):
+    global scopes
+    global current_scope
+    directory_var = scopes.get_vars_table(current_scope).get_one(var_ID)
+    if (directory_var == None):
+        directory_var = scopes.get_vars_table('program').get_one(var_ID)
+        if (directory_var == None):
+            print_error(f'Variable {var_ID} not found in current or global scope', '')
+    return directory_var
+
+
+def create_quad_statistics(arr_ID, quadruple_str):
+    current_var = get_var_directory(arr_ID)
+    if (current_var['is_array']) or (current_var['type'] in ['int', 'float']):    
+        result_address = create_temp_address('float')
+        operands.append(result_address)
+        types.append('float')
+        set_quad(quadruple_str, current_var['arr_size'], current_var['address'], result_address)
+    else:
+        print_error('The {quadruple_str} function only accepts an array of floats or integers.', '')
+
+def create_temp_address(type):
+    global scopes, temps_count, current_scope
+    current_scope_vars = scopes.get_vars_table(current_scope)
+    temp_var_name = f"_temp{temps_count}"
+    temps_count += 1
+    current_scope_vars.add_var(temp_var_name, 'float')
+    new_address = get_vars_new_address(type, True)
+    current_scope_vars.set_var_address(temp_var_name, new_address)
+    return new_address
+
 def get_global_types_map(mem_count):
     global_types_map = {
         'int': mem_count.count_global_int,
@@ -346,69 +399,10 @@ def get_temporal_types_map(mem_count):
     return local_types_map
 
 
-   
-def get_vars_new_address(var_type, is_temp = False, space = 1, other_scope = None):
-    global current_scope
-    global mem_count
-    if other_scope is not None:
-        scope = other_scope
-    else:
-        scope = current_scope
-    if is_temp:
-        mem_count.set_count('temp', var_type, space)
-        return get_temporal_types_map(mem_count)[var_type]
-    if(scope == 'program'):
-        global_types_map = get_global_types_map(mem_count)
-        mem_count.set_count('global', var_type, space)
-        return global_types_map[var_type]
-    local_types_map = get_local_types_map(mem_count)
-    mem_count.set_count('local', var_type, space)
-    return local_types_map[var_type]
 
+##### Neuralgic Points #####
 
-def get_var_directory(var_ID):
-    global scopes
-    global current_scope
-    directory_var = scopes.get_vars_table(current_scope).get_one(var_ID)
-    if (directory_var == None):
-        directory_var = scopes.get_vars_table('program').get_one(var_ID)
-        if (directory_var == None):
-            print_error(f'Variable {var_ID} not found in current or global scope', '')
-
-    return directory_var
-
-
-def set_quad(oper_ID, left_oper, right_oper, result):
-    quadruples.append(Quadruple(operator_IDs[oper_ID] , left_oper, right_oper, result))
-
-
-def create_temp_address(type):
-    global scopes, temps_count, current_scope
-    current_scope_vars = scopes.get_vars_table(current_scope)
-    temp_var_name = f"_temp{temps_count}"
-    temps_count += 1
-    current_scope_vars.add_var(temp_var_name, 'float')
-    new_address = get_vars_new_address(type, True)
-    current_scope_vars.set_var_address(temp_var_name, new_address)
-    return new_address
-
-def create_quad_statistics(arr_ID, quadruple_str):
-    current_var = get_var_directory(arr_ID)
-    if (current_var['is_array']) or (current_var['type'] in ['int', 'float']):    
-        result_address = create_temp_address('float')
-        operands.append(result_address)
-        types.append('float')
-        set_quad(quadruple_str, current_var['arr_size'], current_var['address'], result_address)
-    else:
-        print_error('The {quadruple_str} function only accepts an array of floats or integers.', '')
-
-
-
-
-
-# Neuralgic Points
-
-# Linear Statements
+##### Linear Statements #####
 
 def p_np_global_scope(p):
     '''np_global_scope : '''
@@ -565,26 +559,6 @@ def p_np_set_expression(p):
         print_error(f'Cannot perform operation {operator} to {left_type} and {right_type}', '')
 
 
-def p_np_set_print_quad_str(p):
-    '''np_set_print_quad_str : '''
-    set_quad('PRINT_MULTIPLE', -1, -1, p[-1])
-
-def p_np_set_print_quad_exp(p):
-    '''np_set_print_quad_exp : '''
-    global operands, types
-    types.pop()
-    set_quad('PRINT_MULTIPLE', -1, -1, operands.pop())
-
-def p_np_set_print_same_line_quad_str(p):
-    '''np_set_print_same_line_quad_str : '''
-    set_quad('PRINT', -1, -1, p[-1])
-
-def p_np_set_print_same_line_quad_exp(p):
-    '''np_set_print_same_line_quad_exp : '''
-    global operands, types
-    types.pop()
-    set_quad('PRINT', -1, -1, operands.pop())
-
 # Non-Linear Statements
 
 def p_np_if_gotof(p):
@@ -696,6 +670,32 @@ def p_np_set_read_quad(p):
     var = operands.pop()
     set_quad('READ', -1, data_type_IDs[types.pop()], var)
 
+def p_np_set_print_quad_str(p):
+    '''np_set_print_quad_str : '''
+    set_quad('PRINT_MULTIPLE', -1, -1, p[-1])
+
+def p_np_set_print_quad_exp(p):
+    '''np_set_print_quad_exp : '''
+    global operands, types
+    types.pop()
+    set_quad('PRINT_MULTIPLE', -1, -1, operands.pop())
+
+def p_np_set_print_same_line_quad_str(p):
+    '''np_set_print_same_line_quad_str : '''
+    set_quad('PRINT', -1, -1, p[-1])
+
+def p_np_set_print_same_line_quad_exp(p):
+    '''np_set_print_same_line_quad_exp : '''
+    global operands, types
+    types.pop()
+    set_quad('PRINT', -1, -1, operands.pop())
+
+
+def p_np_func_start(p):
+    '''np_func_start : '''
+    global scopes, current_scope, quadruples
+    scopes.set_quad_count(current_scope, len(quadruples))
+
 def p_np_add_params_type(p):
     '''np_add_params_type : '''
     global scopes, current_scope
@@ -705,11 +705,6 @@ def p_np_add_params_type(p):
     current_scope_IDs_params = scopes.get_parameter_IDs(current_scope)
     current_scope_IDs_params.append(param_ID)
     current_scope_params.append(param_type)
-
-def p_np_func_start(p):
-    '''np_func_start : '''
-    global scopes, current_scope, quadruples
-    scopes.set_quad_count(current_scope, len(quadruples))
 
 def p_np_func_end(p):
     '''np_func_end : '''
@@ -780,7 +775,17 @@ def p_np_set_return_quad(p):
     else:
         print_error(f'Function {current_scope} must return a value of type {func_return_type}', '')
 
-#Statistical Functions
+
+##### Statistical Functions #####
+
+def p_np_set_rand_quad(p):
+    '''np_set_rand_quad : '''
+    result_address = create_temp_address('int')
+    lower_limit = p[-4]
+    upper_limit = p[-2]
+    operands.append(result_address)
+    types.append('int')
+    set_quad('RAND', lower_limit, upper_limit, result_address)
 
 def p_np_set_mean_quad(p):
     '''np_set_mean_quad : '''
@@ -791,15 +796,6 @@ def p_np_set_median_quad(p):
     '''np_set_median_quad : '''
     arr_ID = p[-2]
     create_quad_statistics(arr_ID, 'MEDIAN')
-    
-def p_np_set_rand_quad(p):
-    '''np_set_rand_quad : '''
-    result_address = create_temp_address('int')
-    lower_limit = p[-4]
-    upper_limit = p[-2]
-    operands.append(result_address)
-    types.append('int')
-    set_quad('RAND', lower_limit, upper_limit, result_address)
     
 def p_np_set_variance_quad(p):
     '''np_set_variance_quad : '''
@@ -828,7 +824,7 @@ def p_np_set_plot_quad(p):
     else:
         print_error('The plot function requires 2 arrays of type int or float', '')
 
-# Arrays
+##### Arrays #####
 
 def p_np_check_is_array(p):
     '''np_check_is_array : '''
@@ -849,18 +845,6 @@ def p_np_check_is_array(p):
         print_error(f'Array {arr_ID} is not defined.', '')
     
 
-def p_np_verify_array_dim(p):
-    '''np_verify_array_dim : '''
-    global operands, constants_table, types
-    accessing_array_type = types[-1]
-    arr_ID = p[-4]
-    if (arr_ID is None): 
-        arr_ID = p[-5]
-    if (accessing_array_type == 'int'):
-        set_quad('VERIFY', operands[-1], constants_table[0], constants_table[get_var_directory(arr_ID)['arr_size']])
-    else:
-        print_error(f'Array {arr_ID} must be accesed using an int value', '')
-
 def p_np_get_array_address(p):
     '''np_get_array_address : '''
     global operands, types, constants_table
@@ -873,5 +857,17 @@ def p_np_get_array_address(p):
     operators.pop()
 
     operands.append(pointer_address)
+
+def p_np_verify_array_dim(p):
+    '''np_verify_array_dim : '''
+    global operands, constants_table, types
+    accessing_array_type = types[-1]
+    arr_ID = p[-4]
+    if (arr_ID is None): 
+        arr_ID = p[-5]
+    if (accessing_array_type == 'int'):
+        set_quad('VERIFY', operands[-1], constants_table[0], constants_table[get_var_directory(arr_ID)['arr_size']])
+    else:
+        print_error(f'Array {arr_ID} must be accesed using an int value', '')
 
 parser = yacc.yacc()

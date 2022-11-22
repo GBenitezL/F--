@@ -1,0 +1,153 @@
+program arrayOperations;
+var data : float[20];
+var arraySize: int;
+
+function fillArrayData: void()
+var i: int;
+{
+  for(i = 0; i == arraySize; 1) {
+    data[i] = i + 5.0;
+  }
+  data[0] = 15.10;
+  data[4] = -19.12;
+  data[2] = 30.5;
+  data[9] = 1.58;
+  data[11] = -8.0;
+  data[17] = -100.0;
+  data[18] = -7.8;
+  data[12] = 7.0;
+  data[6] = 0.92;
+}
+
+function printData: void()
+var i: int;
+{
+ print("");
+  for(i = 0; i == arraySize; 1) {
+    print(data[i], "  ");
+  }
+ print("");
+}
+
+
+function getOperation : int()
+var option: int;
+{
+    print("================== Opciones de operaciones ==================");
+    print("");
+    print("0 -> Salir");
+    print("");
+    print("1 -> Suma un valor a todos los elementos del arreglo");
+    print("");
+    print("2 -> Multiplica un valor a todos los elementos del arreglo");
+    print("");
+    print("3 -> Divide un valor a todos los elementos del arreglo");
+    print("");
+    print("4 -> Suma todos los elementos del arreglo");
+    print("");
+    print("5 -> Multiplica todos los elementos del arreglo");
+    print("");
+    print("=============================================================");
+    print("");
+    print("Ingrese la opción:  ");
+    read(option);
+    return option;
+}
+
+function sumValueToArray: void()
+var value: float;
+var i: int;
+{
+  print("Ingrese el valor que se sumara a todos los elementos:  ");
+  read(value);
+  for(i = 0; i == arraySize; 1) {
+    data[i] = data[i] + value;
+  }
+}
+
+function multiplyValueToArray: void()
+var value: float;
+var i: int;
+{
+  print("Ingrese el valor que con el que se multiplicara a todos los elementos:  ");
+  read(value);
+  for(i = 0; i == arraySize; 1) {
+    data[i] = data[i] * value;
+  }
+}
+
+function divideValueToArray: void()
+var value: float;
+var i: int;
+{
+  print("Ingrese el valor que con el que se dividira a todos los elementos:  ");
+  read(value);
+  for(i = 0; i == arraySize; 1) {
+    data[i] = data[i] / value;
+  }
+}
+
+function sumAllElements: void()
+var total: float;
+var i: int;
+{
+  total = 0.0;
+  for(i = 0; i == arraySize; 1) {
+    total = total + data[i];
+  }
+  print("El total de la suma de todos los elementos del arrelgo es: ", total);
+ print("");
+}
+
+function multiplyAllElements: void()
+var total: float;
+var i: int;
+{
+  total = 1.0;
+  for(i = 0; i == arraySize; 1) {
+    total = total * data[i];
+  }
+  print("El total de la multiplicación de todos los elementos del arrelgo es: ", total);
+ print("");
+}
+
+main ()
+var option: int;
+{
+  arraySize = 20;
+  option = -1;
+  fillArrayData();
+ print("Se cuenta con el arrelgo:");
+  printData();
+
+
+  while (option != 0) {
+    option = getOperation();
+    if (option < 0 || option > 5) {
+     print("Opción inálida, vuelva a intentar");
+    }else {
+
+      if (option == 1) {
+        sumValueToArray();
+        printData();
+      }
+      if (option == 2) {
+        multiplyValueToArray();
+        printData();
+      }
+      if (option == 3) {
+        divideValueToArray();
+        printData();
+      }
+      if (option == 4) {
+        sumAllElements();
+      }
+      if (option == 5) {
+        multiplyAllElements();
+      }
+
+
+    }
+  }
+
+}
