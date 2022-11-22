@@ -1,4 +1,4 @@
-from utils import print_error
+from Compilador.utils import print_error
 
 class Semantic_Cube:
     

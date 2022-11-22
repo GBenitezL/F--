@@ -1,4 +1,4 @@
-from utils import print_error
+from Compilador.utils import print_error
 
 types_enum = {
     'int': 0,
@@ -56,7 +56,7 @@ class Scopes_Directory(Directory):
     
     def set_size(self, id):
         vars_table = self.directory[id]['vars_table'].directory
-        types_counter = [0] * 4 # Starts array with 0's
+        types_counter = [0] * 4
         total_size = 0
         for key, value in vars_table.items():
             var_type = value['type']

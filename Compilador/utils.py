@@ -7,6 +7,12 @@ data_type_IDs = {
     'bool': 4, 
 }
 
+data_type_values = {
+    1: 'int',
+    2: 'float',
+    3: 'char',
+    4: 'bool',
+}
 
 operator_IDs = {
     '+': 1,
@@ -35,13 +41,14 @@ operator_IDs = {
 
     'RETURN': 30,
     'PRINT': 31,
-    'READ': 32,
-    'MEAN': 33,
-    'MEDIAN': 34,
-    'VARIANCE': 35,
-    'STD': 36,
-    'RAND': 37,
-    'PLOT': 38,
+    'PRINT_MULTIPLE': 32,
+    'READ': 33,
+    'MEAN': 34,
+    'MEDIAN': 35,
+    'VARIANCE': 36,
+    'STD': 37,
+    'RAND': 38,
+    'PLOT': 39,
 }
 
 def print_error(message, id=''):
