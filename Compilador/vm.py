@@ -1,8 +1,8 @@
 import operator, statistics, random, bisect
 from collections import deque
 import matplotlib.pyplot as plt
-from utils import print_error, data_type_values
-from parser import scopes, quadruples, constants_table
+from Compilador.parser import scopes, quadruples, constants_table
+from Compilador.utils import print_error, data_type_values
 
 class Memory:
     def __init__(self):
@@ -103,18 +103,169 @@ def assign_value(value_address, save_address):
     
     save_pointer_value(save_address,get_pointer_value(value_address))
 
-def print_value(value, jump_line = False):
+def print_value(value, multiple = False):
     is_address = type(value) is int
     if(is_address):
         value_to_print = get_pointer_value(value)
     else:
         value_to_print = value[1:-1]
     
-    if jump_line == False:
-        print(value_to_print, end='')
-    else:
+    if multiple == False or value_to_print == '':
         print(value_to_print)
+    else:
+        print(value_to_print, end='')
 
+def save_mem_for_function(function_ID):
+    global scopes
+    if scopes.exists(function_ID):
+        check_mem(scopes.get_size(function_ID))
+    else:
+        print_error(f'Function {function_ID} is yet to be defined', '')
+    
+def go_to_function(function_ID, new_instruction_pointer):
+    global mem_stack
+    global instruction_pointer_stack
+    global scopes
+    global instruction_pointer
+    global current_mem
+    global func_call_IDs
+    global params_queue
+    param_IDs = scopes.get_parameter_IDs(function_ID)
+    new_current_mem = Memory()
+    if len(param_IDs) != 0:
+        for param_ID in param_IDs:
+            var_address = get_func_local_ddress(function_ID, param_ID)
+            new_current_mem.dict[var_address] = get_pointer_value(params_queue.popleft())
+    instruction_pointer_stack.append(instruction_pointer + 1)
+    update_instruction_pointer(new_instruction_pointer)
+    mem_stack.append(current_mem)
+    current_mem = new_current_mem
+    func_call_IDs.append(function_ID)
+
+
+
+def on_function_end():
+    global func_call_IDs
+    global scopes
+    global instruction_pointer_stack
+    global current_mem
+    global mem_stack
+    global mem_size
+    function_ID = func_call_IDs.pop()
+    func_return_type = scopes.get_return_type(function_ID)
+    if func_return_type != 'void':
+        print_error(f'Function {function_ID} requires a return statement of type {func_return_type}', '')
+    current_mem = mem_stack.pop()
+    update_instruction_pointer(instruction_pointer_stack.pop())
+    mem_size = mem_size + scopes.get_size(function_ID)
+    
+def get_func_global_ddress(function_ID):
+    global scopes
+    directory_var = scopes.get_vars_table('program').get_one(function_ID)
+    return directory_var.get('address')
+
+def get_func_local_ddress(scope_ID, var_ID):
+    global scopes
+    directory_var = scopes.get_vars_table(scope_ID).get_one(var_ID)
+    return directory_var.get('address')
+
+
+def on_function_end_with_return(return_value_address):
+    global func_call_IDs
+    global scopes
+    global instruction_pointer_stack
+    global current_mem
+    global mem_stack
+    global mem_size
+
+    function_ID = func_call_IDs.pop()
+    func_return_type = scopes.get_return_type(function_ID)
+    if data_type_values[int(str(return_value_address)[1])] != func_return_type:
+        print_error(f'Function {function_ID} shoud be returning a {func_return_type}, instead it is being returned a {data_type_values[str(return_value_address)[1]]}', '')
+    save_pointer_value(get_func_global_ddress(function_ID), get_pointer_value(return_value_address))
+    current_mem = mem_stack.pop()
+    update_instruction_pointer(instruction_pointer_stack.pop())
+    func_size = scopes.get_size(function_ID)
+    mem_size = mem_size + func_size
+    
+def add_param_for_function_call(value_address):
+    global params_queue
+    params_queue.append(value_address)
+    
+def save_pointer_value_on_input(save_address, type_to_read):
+    input_value = input()
+    try:
+        match type_to_read:
+            case 1:
+                input_value = int(input_value)
+            case 2:
+                input_value = float(input_value)
+            case 3:
+                input_value = str(input_value)
+                if len(input_value) > 1:
+                    print_error(f'\'char\' should have a length of 1 ', '')
+            case 4:
+                match input_value:
+                    case 'true':
+                        input_value = True
+                    case 'false':
+                        input_value = False
+                    case _:
+                        print_error(f'\'bool\' should have a value of \'true\' or \'false\' ', '')
+    except:
+        print_error(f'Expected a value of type {data_type_values[type_to_read]}.', '')
+    
+    pointer = str(save_address)[0] == '5'    
+    if (pointer):
+        save_address = find_address(save_address)
+    
+    save_pointer_value(save_address, input_value)
+    
+
+def verify_arr_access(access_value, arr_inferior_limit, arr_upp_limit):
+    value = get_pointer_value(access_value)
+    inferior_limit = get_pointer_value(arr_inferior_limit)
+    upper_limit =  get_pointer_value(arr_upp_limit)
+    if inferior_limit > value or upper_limit <= value:
+        print_error(f'Out of bounds: {value} is not within the limits of {inferior_limit} and {upper_limit}', '')
+
+
+
+def calculate_mean(arr_size, array_var_address, save_address_pointer_value):
+    sum_of_values = 0
+    for x in range(arr_size):
+        sum_of_values = sum_of_values + find_address(array_var_address)
+    save_pointer_value(save_address_pointer_value, sum_of_values / arr_size)
+
+
+def calculate_median(arr_size, array_var_address, save_address_pointer_value):
+    numbers = []
+    for x in range(arr_size):
+        bisect.insort(numbers, find_address(array_var_address))
+        array_var_address += 1
+    save_pointer_value(save_address_pointer_value, statistics.median(numbers))
+
+def calculate_variance_value(arr_size, array_var_address, save_address_pointer_value):
+    numbers = get_array_as_list(array_var_address, arr_size)
+    save_pointer_value(save_address_pointer_value, statistics.variance(numbers))
+
+def calculate_std_value(arr_size, array_var_address, save_address_pointer_value):
+    numbers = get_array_as_list(array_var_address, arr_size)
+    save_pointer_value(save_address_pointer_value, statistics.stdev(numbers))
+
+def get_array_as_list(starting_address, arr_size):
+    numbers = []
+    for x in range(arr_size):
+        numbers.append(find_address(starting_address))
+        starting_address += 1
+    return numbers
+
+def create_random(lower_limit, upper_limit, save_address_pointer_value):
+    save_pointer_value(save_address_pointer_value, random.randint(lower_limit, upper_limit))
+
+def create_plot(x_array_var_address, y_array_var_address, arr_size):
+    plt.plot(get_array_as_list(x_array_var_address, arr_size), get_array_as_list(y_array_var_address, arr_size), 'bo')
+    plt.show()
 
 def check_quadruples():
     global is_executing
@@ -128,7 +279,7 @@ def check_quadruples():
         result = quadruples[instruction_pointer].get_result()
         
         match operation:
-            case 27:
+            case 28:
                 is_executing = False
                 print('\n\nProgram Executed Successfuly\n')
             case 1: 
@@ -172,11 +323,65 @@ def check_quadruples():
             case 13:
                 assign_value(left_oper, result)
                 update_instruction_pointer()
+            case 20:
+                update_instruction_pointer(result)
+            case 21:
+                if (get_pointer_value(left_oper)):
+                    update_instruction_pointer(result)
+                else:
+                    update_instruction_pointer()
+            case 22:
+                if (get_pointer_value(left_oper)):
+                    update_instruction_pointer()
+                else:
+                    update_instruction_pointer(result)
+            case 23:
+                go_to_function(left_oper, result)
+            case 24:
+                save_mem_for_function(result)
+                update_instruction_pointer()
+            case 25:
+                verify_arr_access(left_oper, right_oper, result)
+                update_instruction_pointer()
+            case 26:
+                add_param_for_function_call(left_oper)
+                update_instruction_pointer()
+            case 27:
+                on_function_end()
+            case 30:
+                on_function_end_with_return(result)
+            case 31:
+                print_value(result)
+                update_instruction_pointer()
+            case 32:
+                print_value(result, multiple= True)
+                update_instruction_pointer()
+            case 33:
+                save_pointer_value_on_input(result, right_oper)
+                update_instruction_pointer()
+            case 34:
+                calculate_mean(left_oper, right_oper, result)
+                update_instruction_pointer()
+            case 35:
+                calculate_median(left_oper, right_oper, result)
+                update_instruction_pointer()
+            case 36:
+                calculate_variance_value(left_oper, right_oper, result)
+                update_instruction_pointer()
+            case 37:
+                calculate_std_value(left_oper, right_oper, result)
+                update_instruction_pointer()
+            case 38:
+                create_random(left_oper, right_oper, result)
+                update_instruction_pointer()
+            case 39:
+                create_plot(left_oper, right_oper, result)
+                update_instruction_pointer()
             case _:
                 instruction_pointer += 1
 
 
-def execute():
+def start_vm():
     start_global_mem()
     start_main_mem()
     print('\nStarting Program Execution\n')
