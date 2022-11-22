@@ -59,7 +59,7 @@ t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'
-t_CTESTRING = r'\".*\"'
+t_CTESTRING = r'\"(\\.|[^"\\])*\"'
 t_CTEC = r'\'(.{1})\''
 
 def t_newline(t):

@@ -198,13 +198,13 @@ def p_write(p):
 def p_write_2(p):
     '''write_2 : expression np_set_print_quad_exp COMMA write_2_multiple
         | expression np_set_print_quad_exp
-        | CTESTRING  np_set_print_quad_str COMMA write_2_multiple
+        | CTESTRING np_set_print_quad_str COMMA write_2_multiple
         | CTESTRING np_set_print_quad_str'''
 
 def p_write_2_multiple(p):
     '''write_2_multiple : expression np_set_print_same_line_quad_exp COMMA write_2_multiple
         | expression np_set_print_same_line_quad_exp
-        | CTESTRING  np_set_print_same_line_quad_str COMMA write_2_multiple
+        | CTESTRING np_set_print_same_line_quad_str COMMA write_2_multiple
         | CTESTRING np_set_print_same_line_quad_str'''
 
 def p_read(p):
