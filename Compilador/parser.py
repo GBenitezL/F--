@@ -61,7 +61,7 @@ def p_array(p):
         if arr_size >= 1:
             create_cteint_address(arr_size)
         else:
-            print_error(f'Array size should be greater than 1', '')
+            print_error(f'Array size should be greater than 1', 'EC-05')
 
 def p_function(p):
     '''function : FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN np_func_start block np_func_end
@@ -298,7 +298,7 @@ def create_quad(operator_to_check):
             operands.append(new_address)
             types.append(res_type)
         else:
-            print_error(f'Cannot perform operation {operator} to {left_type} and {right_type}', '')
+            print_error(f'Cannot perform operation {operator} to {left_type} and {right_type}', 'EC-01')
 
 def set_quad(oper_ID, left_oper, right_oper, result):
     quadruples.append(Quadruple(operator_IDs[oper_ID] , left_oper, right_oper, result))
@@ -346,19 +346,19 @@ def get_var_directory(var_ID):
     if (directory_var == None):
         directory_var = scopes.get_vars_table('program').get_one(var_ID)
         if (directory_var == None):
-            print_error(f'Variable {var_ID} not found in current or global scope', '')
+            print_error(f'Variable {var_ID} not found in current or global scope', 'EC-06')
     return directory_var
 
 
-def create_quad_statistics(arr_ID, quadruple_str):
+def create_quad_statistics(arr_ID, stat_operator):
     current_var = get_var_directory(arr_ID)
     if (current_var['is_array']) or (current_var['type'] in ['int', 'float']):    
         result_address = create_temp_address('float')
         operands.append(result_address)
         types.append('float')
-        set_quad(quadruple_str, current_var['arr_size'], current_var['address'], result_address)
+        set_quad(stat_operator, current_var['arr_size'], current_var['address'], result_address)
     else:
-        print_error('The {quadruple_str} function only accepts an array of floats or integers.', '')
+        print_error('{stat_operator} function requires an array of floats or integers.', 'EC-07')
 
 def create_temp_address(type):
     global scopes, temps_count, current_scope
@@ -523,7 +523,7 @@ def p_np_close_paren(p):
     if operators[-1] == '(':
         operators.pop()
     else:
-        print_error('Cannot find opening parenthesis', '')
+        print_error('Cannot find opening parenthesis', 'EC-08')
     
 def p_np_quad_plus_minus(p):
     '''np_quad_plus_minus : '''
@@ -556,7 +556,7 @@ def p_np_set_expression(p):
     if Semantic_Cube.getType(operator, right_type, left_type) != 'Error':
         set_quad(operator, right_oper, -1, left_oper)
     else:
-        print_error(f'Cannot perform operation {operator} to {left_type} and {right_type}', '')
+        print_error(f'Cannot perform operation {operator} to {left_type} and {right_type}', 'EC-01')
 
 
 # Non-Linear Statements
@@ -569,7 +569,7 @@ def p_np_if_gotof(p):
         set_quad('GOTOF', operands.pop(), -1, -1)
         jumps.append(len(quadruples) - 1)
     else:
-        print_error(f'Conditional statement must be of type bool', '')
+        print_error(f'Conditional statement must be of type bool', 'EC-09')
 
 def p_np_if_end_gotof(p):
     '''np_if_end_gotof : '''
@@ -599,7 +599,7 @@ def p_np_for_expression(p):
         operands.append(left_oper)
         types.append('int')
     else:
-        print_error(f'"For" loop requires limits of type int', '')
+        print_error(f'For loop requires limits of type int', 'EC-10')
 
 def p_np_for_limit(p):
     ''' np_for_limit : '''
@@ -611,7 +611,7 @@ def p_np_for_limit(p):
         set_quad('GOTOV', result, -1, -1)
         jumps.append(len(quadruples) - 1)
     else:
-        print_error(f'"For" loop requires condition of type bool', '')
+        print_error(f'For loop requires condition of type bool', 'EC-11')
 
 def p_np_for_end(p):
     '''np_for_end : '''
@@ -621,7 +621,7 @@ def p_np_for_end(p):
         for_value = operands.pop()
         for_var_type = types.pop()
     else:
-        print_error('Value for "For" loop update variable should be int', '')
+        print_error('Value for For loop update variable should be int', 'EC-12')
     
     if Semantic_Cube.getType('+', for_var_type, 'int') == 'int':
         set_quad('+', for_value, for_length, for_value)
@@ -629,7 +629,7 @@ def p_np_for_end(p):
         set_quad('GOTO', -1, -1, jumps.pop())
         quadruples[end_pos].set_result(len(quadruples))
     else:
-        print_error(f'Type mismatch: Cannot perform operation + on {for_var_type} and int', '')
+        print_error(f'Cannot perform operation + to {for_var_type} and int', 'EC-01')
 
 
 def p_np_while_start (p):
@@ -643,7 +643,7 @@ def p_np_while_expression (p):
         set_quad('GOTOF', operands.pop(), -1, -1)
         jumps.append(len(quadruples) - 1)
     else:
-        print_error(f'Conditional statement must be of type bool', '')
+        print_error(f'Conditional statement must be of type bool', 'EC-09')
 
 def p_np_while_end (p):
     '''np_while_end : '''
@@ -724,7 +724,7 @@ def p_np_check_func_call(p):
         set_quad('ERA', -1, -1, current_func_call_ID)
         operators.append('~')
     else:
-        print_error(f'Function {current_func_call_ID} is not defined', '')
+        print_error(f'Function {current_func_call_ID} is not defined', 'EC-13')
 
 def p_np_add_func_call_param(p):
     '''np_add_func_call_param : '''
@@ -739,7 +739,7 @@ def p_np_add_func_call_param(p):
         params_count += 1
         params_stack.append(params_count)
     else:
-        print_error(f'The {params_count + 1}º argument of function {current_func_call_ID} should be of type {function_call_params[params_count]}', '')
+        print_error(f'The {params_count + 1}th argument of function {current_func_call_ID} should be of type {function_call_params[params_count]}', 'EC-14')
     
 def p_np_func_end_params(p):
     '''np_func_end_params : '''
@@ -751,7 +751,7 @@ def p_np_func_end_params(p):
         initial_function_addres = scopes.get_quad_count(current_func_call_ID)
         set_quad('GOSUB', current_func_call_ID, -1, initial_function_addres)
     else:
-        print_error(f'''Function {current_func_call_ID}, requires {size_of_params} arguments''', '')
+        print_error(f'Function {current_func_call_ID}, requires {size_of_params} arguments', 'EC-15')
     
     fun_return_type = scopes.get_return_type(current_func_call_ID)
     if fun_return_type != 'void':
@@ -773,7 +773,7 @@ def p_np_set_return_quad(p):
     if (func_return_type == types.pop()):
         set_quad('RETURN', -1, -1, operands.pop())
     else:
-        print_error(f'Function {current_scope} must return a value of type {func_return_type}', '')
+        print_error(f'Function {current_scope} must return a value of type {func_return_type}', 'EC-16')
 
 
 ##### Statistical Functions #####
@@ -818,11 +818,11 @@ def p_np_set_plot_quad(p):
                 if x_array_var['arr_size'] == y_array_var['arr_size']:
                     set_quad('PLOT', x_array_var['address'], y_array_var['address'], x_array_var['arr_size'])
                 else:
-                    print_error(f'Arrays{p[-4]} and {p[-2]} must be of equal length', '')
+                    print_error(f'Arrays{p[-4]} and {p[-2]} must be of equal length', 'EC-17')
         else:
-            print_error('The plot function requires 2 arrays of type int or float', '')
+            print_error('The plot function requires 2 arrays of type int or float', 'EC-18')
     else:
-        print_error('The plot function requires 2 arrays of type int or float', '')
+        print_error('The plot function requires 2 arrays of type int or float', 'EC-18')
 
 ##### Arrays #####
 
@@ -842,7 +842,7 @@ def p_np_check_is_array(p):
         types.append(current_var['type'])
         operators.append('|')
     else:
-        print_error(f'Array {arr_ID} is not defined.', '')
+        print_error(f'Array {arr_ID} is not defined.', 'EC-19')
     
 
 def p_np_get_array_address(p):
@@ -868,6 +868,6 @@ def p_np_verify_array_dim(p):
     if (accessing_array_type == 'int'):
         set_quad('VERIFY', operands[-1], constants_table[0], constants_table[get_var_directory(arr_ID)['arr_size']])
     else:
-        print_error(f'Array {arr_ID} must be accesed using an int value', '')
+        print_error(f'Array {arr_ID} must be accesed using an int value', 'EC-20')
 
 parser = yacc.yacc()

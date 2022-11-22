@@ -1,4 +1,5 @@
-import operator, statistics, random, bisect
+import operator, statistics, random
+from bisect import insort
 from collections import deque
 import matplotlib.pyplot as plt
 from Compilador.parser import scopes, quadruples, constants_table
@@ -40,7 +41,7 @@ def start_main_mem():
 def check_mem(size):
     global mem_size
     if (mem_size < size):
-        print_error('Insufficient Memory', '')
+        print_error('Insufficient Memory', 'EE-01')
     mem_size = mem_size - size
 
 def save_mem_for_function(function_ID):
@@ -48,7 +49,7 @@ def save_mem_for_function(function_ID):
     if scopes.exists(function_ID):
         check_mem(scopes.get_size(function_ID))
     else:
-        print_error(f'Function {function_ID} is yet to be defined', '')
+        print_error(f'Function {function_ID} is yet to be defined', 'EE-02')
     
 ##### POINTERS #####
 
@@ -84,7 +85,7 @@ def update_instruction_pointer(new_pos = None):
         new_pos = instruction_pointer + 1
     inexistent = new_pos > len(quadruples)
     if inexistent:
-        print_error('Cannot locate positon {new_pos}', '')
+        print_error('Cannot locate positon {new_pos}', 'EE-03')
     instruction_pointer = new_pos
     
 def find_address(pointer):
@@ -93,7 +94,7 @@ def find_address(pointer):
     elif pointer in global_mem.dict:
         value = global_mem.dict.get(pointer)
     else:
-        print_error(f'Cannot locate value. {pointer} has not been assigned yet', '')
+        print_error(f'Cannot locate value. {pointer} has not been assigned yet', 'EE-04')
         
     if (value == 'true'):
         value = True
@@ -112,7 +113,7 @@ def save_pointer_value_on_input(save_address, type_to_read):
             case 3:
                 input_value = str(input_value)
                 if len(input_value) > 1:
-                    print_error(f'\'char\' should have a length of 1 ', '')
+                    print_error(f'char should have a length of 1', 'EE-05')
             case 4:
                 match input_value:
                     case 'true':
@@ -120,9 +121,9 @@ def save_pointer_value_on_input(save_address, type_to_read):
                     case 'false':
                         input_value = False
                     case _:
-                        print_error(f'\'bool\' should have a value of \'true\' or \'false\' ', '')
+                        print_error(f'bool should have a value of either true or false', 'EE-06')
     except:
-        print_error(f'Expected a value of type {data_type_values[type_to_read]}.', '')
+        print_error(f'Expected a value of type {data_type_values[type_to_read]}', 'EE-07')
     
     pointer = str(save_address)[0] == '5'    
     if (pointer):
@@ -162,7 +163,7 @@ def on_function_end():
     function_ID = func_call_IDs.pop()
     func_return_type = scopes.get_return_type(function_ID)
     if func_return_type != 'void':
-        print_error(f'Function {function_ID} requires a return statement of type {func_return_type}', '')
+        print_error(f'Function {function_ID} requires a return value of type {func_return_type}', 'EE-08')
     current_mem = mem_stack.pop()
     update_instruction_pointer(instruction_pointer_stack.pop())
     mem_size = mem_size + scopes.get_size(function_ID)
@@ -178,7 +179,7 @@ def on_function_end_with_return(return_value_address):
     function_ID = func_call_IDs.pop()
     func_return_type = scopes.get_return_type(function_ID)
     if data_type_values[int(str(return_value_address)[1])] != func_return_type:
-        print_error(f'Function {function_ID} shoud be returning a {func_return_type}, instead it is being returned a {data_type_values[str(return_value_address)[1]]}', '')
+        print_error(f'Function {function_ID} requires a return value of type {func_return_type}', 'EE-08')
     save_pointer_value(get_func_global_address(function_ID), get_pointer_value(return_value_address))
     current_mem = mem_stack.pop()
     update_instruction_pointer(instruction_pointer_stack.pop())
@@ -207,7 +208,7 @@ def verify_arr_access(access_value, arr_inferior_limit, arr_upp_limit):
     inferior_limit = get_pointer_value(arr_inferior_limit)
     upper_limit =  get_pointer_value(arr_upp_limit)
     if inferior_limit > value or upper_limit <= value:
-        print_error(f'Out of bounds: {value} is not within the limits of {inferior_limit} and {upper_limit}', '')
+        print_error(f'Out of bounds: {value} is not within the limits of {inferior_limit} and {upper_limit}', 'EE-09')
 
 def get_array_as_list(starting_address, arr_size):
     numbers_list = []
@@ -228,7 +229,7 @@ def calculate_mean(arr_size, array_var_address, save_address_pointer_value):
 def calculate_median(arr_size, array_var_address, save_address_pointer_value):
     numbers_list = []
     for x in range(arr_size):
-        bisect.insort(numbers_list, find_address(array_var_address))
+        insort(numbers_list, find_address(array_var_address))
         array_var_address += 1
     save_pointer_value(save_address_pointer_value, statistics.median(numbers_list))
 
@@ -299,7 +300,7 @@ def check_quadruples():
                 update_instruction_pointer()
             case 3:
                 if get_pointer_value(right_oper) == 0:
-                    print_error(f'Cannot perform a division by 0', '')
+                    print_error(f'Cannot perform a division by 0', 'EE-10')
                 arithmetic_operation(left_oper, right_oper, result, operator.truediv)
                 update_instruction_pointer()
             case 4:

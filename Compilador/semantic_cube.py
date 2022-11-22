@@ -46,5 +46,5 @@ class Semantic_Cube:
                 symbol in comparison_symbols):
                 return 'bool'
 
-        print_error(f'Cannot perform operation {symbol} to {type1} and {type2}', '')
+        print_error(f'Cannot perform operation {symbol} to {type1} and {type2}', 'EC-01')
 

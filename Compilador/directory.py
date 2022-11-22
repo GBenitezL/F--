@@ -28,9 +28,9 @@ class Directory():
 class Scopes_Directory(Directory):
     def add_new_scope(self, id, return_type, vars_table):
         if self.exists(id):
-            print_error(f'{id} already exists in this scope', '')
+            print_error(f'Scope {id} already exists in this scope', 'EC-02')
         if return_type not in ['int', 'float', 'char', 'bool', 'void']:
-            print_error(f'{id} does not have a return type {return_type}', '')
+            print_error(f'{id} requires a return type {return_type}', 'EC-03')
         parameters = []
         params_IDs = []
         self.directory[id] = { 'vars_table': vars_table, 'return_type': return_type, 'parameters': parameters, 
@@ -92,9 +92,9 @@ class Vars(Directory):
     
     def add_var(self, id, type, value = None):
         if id in self.directory:
-            print_error('Variable {id} has already been declared in this scope', '')
+            print_error('Variable {id} has already been declared in this scope', 'EC-04')
         if type == 'void' or type not in ['int', 'float', 'char', 'bool']:
-            print_error(f'{id} does not have a return type {type}', '')
+            print_error(f'{id} requires a return type {type}', 'EC-03')
         self.directory[id] = {'type': type ,'value': value, 'address': None}
     
     def set_var_address(self, id, address):
