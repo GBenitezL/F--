@@ -1,11 +1,11 @@
 import sys
 import ply.yacc as yacc
-from lexer import tokens
-from semantic_cube import Semantic_Cube
-from directory import Scopes_Directory, Vars
-from utils import data_type_IDs, operator_IDs, print_error
-from quadruples import Quadruple
-from memory import Memory
+from Compilador.lexer import tokens
+from Compilador.semantic_cube import Semantic_Cube
+from Compilador.directory import Scopes_Directory, Vars
+from Compilador.utils import data_type_IDs, operator_IDs, print_error
+from Compilador.quadruples import Quadruple
+from Compilador.memory import Memory
 from collections import deque
 
 # Variables
@@ -221,10 +221,16 @@ def p_write(p):
     '''write : PRINT LPAREN write_2 RPAREN SCOLON'''
 
 def p_write_2(p):
-    '''write_2 : expression np_set_print_quad_exp COMMA write_2
+    '''write_2 : expression np_set_print_quad_exp COMMA write_2_multiple
         | expression np_set_print_quad_exp
-        | CTESTRING  np_set_print_quad_str COMMA write_2
+        | CTESTRING  np_set_print_quad_str COMMA write_2_multiple
         | CTESTRING np_set_print_quad_str'''
+
+def p_write_2_multiple(p):
+    '''write_2_multiple : expression np_set_print_same_line_quad_exp COMMA write_2_multiple
+        | expression np_set_print_same_line_quad_exp
+        | CTESTRING  np_set_print_same_line_quad_str COMMA write_2_multiple
+        | CTESTRING np_set_print_same_line_quad_str'''
 
 def p_read(p):
     '''read : READ LPAREN read_2 RPAREN np_set_read_quad SCOLON'''
@@ -561,10 +567,20 @@ def p_np_set_expression(p):
 
 def p_np_set_print_quad_str(p):
     '''np_set_print_quad_str : '''
-    set_quad('PRINT', -1, -1, p[-1])
+    set_quad('PRINT_MULTIPLE', -1, -1, p[-1])
 
 def p_np_set_print_quad_exp(p):
     '''np_set_print_quad_exp : '''
+    global operands, types
+    types.pop()
+    set_quad('PRINT_MULTIPLE', -1, -1, operands.pop())
+
+def p_np_set_print_same_line_quad_str(p):
+    '''np_set_print_same_line_quad_str : '''
+    set_quad('PRINT', -1, -1, p[-1])
+
+def p_np_set_print_same_line_quad_exp(p):
+    '''np_set_print_same_line_quad_exp : '''
     global operands, types
     types.pop()
     set_quad('PRINT', -1, -1, operands.pop())
@@ -779,12 +795,10 @@ def p_np_set_median_quad(p):
 def p_np_set_rand_quad(p):
     '''np_set_rand_quad : '''
     result_address = create_temp_address('int')
-    # Add it to stacks so it can be used on a expression or else
     lower_limit = p[-4]
     upper_limit = p[-2]
     operands.append(result_address)
     types.append('int')
-    # Create special function quadruple
     set_quad('RAND', lower_limit, upper_limit, result_address)
     
 def p_np_set_variance_quad(p):
