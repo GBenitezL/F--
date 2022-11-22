@@ -67,7 +67,7 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 def t_ID(t):
-    r'[A-Za-z]([A-Za-z]|[0-9])*'
+    r'[_a-zA-Z][_a-zA-Z0-9]{0,30}'
     t.type = keywords.get(t.value, 'ID')
     return t
 

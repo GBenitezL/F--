@@ -94,7 +94,7 @@ def find_address(pointer):
     elif pointer in global_mem.dict:
         value = global_mem.dict.get(pointer)
     else:
-        print_error(f'Cannot locate value. {pointer} has not been assigned yet', 'EE-04')
+        print_error(f'Cannot locate value. Pointer {pointer} has not been assigned yet', 'EE-04')
         
     if (value == 'true'):
         value = True
