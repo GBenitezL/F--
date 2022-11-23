@@ -76,10 +76,10 @@ for (i = 0; i < 10; 1) {
 #### Declaracion
 ```
 function func1: void(number: int){
-    print("Number: ", number)
+    print("Number: ", number);
 }
 ```
 #### Llamado
 ```
-func1(5)
+func1(5);
 ```
