@@ -245,7 +245,7 @@ def create_random(lower_limit, upper_limit, save_address_pointer_value):
     save_pointer_value(save_address_pointer_value, random.randint(lower_limit, upper_limit))
 
 def create_plot(x_array_var_address, y_array_var_address, arr_size):
-    plt.plot(get_array_as_list(x_array_var_address, arr_size), get_array_as_list(y_array_var_address, arr_size), 'go')
+    plt.plot(get_array_as_list(x_array_var_address, arr_size), get_array_as_list(y_array_var_address, arr_size), 'g')
     plt.show()
 
 
