@@ -45,6 +45,10 @@ class Semantic_Cube:
                 symbol == '||' or 
                 symbol in comparison_symbols):
                 return 'bool'
+        
+        if type1 == 'int' and type2 =='float':
+            if symbol == '=':
+                return 'float'
 
         print_error(f'Cannot perform operation {symbol} to {type1} and {type2}', 'EC-01')
 

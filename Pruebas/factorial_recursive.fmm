@@ -1,0 +1,19 @@
+program factorial_recursive;
+
+function factorial:int (number : int) 
+{
+  if (number <= 1) {
+    return 1;
+  } else {
+    return (number * factorial(number - 1));
+  }
+}
+
+main()
+var result, x: int;
+{
+    print("Digita el numero para calcular su factorial: ");
+    read(x);
+    result = factorial(x);
+    print("El factorial es: ", result);
+}

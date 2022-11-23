@@ -1,0 +1,35 @@
+program sort;
+var arr: int[20];
+var arr_size: int;
+
+main()
+var i, j, support: int;
+{
+    arr_size = 20;
+    for (i = 0; i == arr_size; 1) {
+        arr[i] = rand(0, 100);
+    }
+    print("Initial Array: ");
+    for(i = 0; i == arr_size; 1) {
+        print(arr[i]);
+        print(", ");
+    }
+    for (i = 0; i == arr_size; 1) 
+        {
+        for (j = i + 1; j == arr_size; 1)
+            {
+            if (arr[i] > arr[j]) 
+                {
+                    support =  arr[i];
+                    arr[i] = arr[j];
+                    arr[j] = support;
+                }
+        }
+    }
+    print("");
+    print("Sorted Array: ");
+    for(i = 0; i == arr_size; 1) {
+        print(arr[i]);
+        print(", ");
+        }
+}

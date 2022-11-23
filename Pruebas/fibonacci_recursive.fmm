@@ -1,0 +1,23 @@
+program fibonacci_recursive;
+
+function fibonacci: int(positon : int) {
+  if(positon == 0 || positon == 1) {
+    return positon;
+  } else {
+    return fibonacci(positon - 1) + fibonacci(positon - 2);
+  }
+}
+
+main() 
+var positon, result: int;
+{
+  print("Digite la posicion que quiere encontrar en la secuencia Fibonacci: ");
+  read(positon);
+  if (positon > 0){
+    result = fibonacci(positon);
+    print("El valor de Fibonacci en esta posicion es: ", result);
+  }
+  else {
+    print("El valor debe ser superior a 0");
+  }
+}
