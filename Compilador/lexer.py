@@ -76,7 +76,7 @@ def t_CTEF(t):
     try:
         t.value = float(t.value)
     except ValueError:
-        print("Error (Float Value):", t.value)
+        print("Lexical Error:", t.value)
         t.value = 0
     return t
 
@@ -85,12 +85,12 @@ def t_CTEI(t):
     try:
         t.value = int(t.value)
     except ValueError:
-        print("Error (Int Value):", t.value)
+        print("Lexical Error:", t.value)
         t.value = 0
     return t
 
 def t_error(t):
-    print("Invalid character '%s'" % t.value[0])
+    print("Lexical Error: '%s'" % t.value[0])
     t.lexer.skip(1)
 
 lexer = lex.lex()
