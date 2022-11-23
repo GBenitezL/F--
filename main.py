@@ -18,8 +18,15 @@ def print_constants():
         print(index, '\t\t', const, '\t\t', constants_table[const])
 
 def main(argv):
-    f = open(f"{argv[1]}", "r")
-    print(parser.parse(f.read(), debug=False))
+    if len(argv) != 2:
+        sys.exit("To run a program, type the following command structure: python main.py file_name.fmm")
+    file = argv[1]
+
+    if str(file)[-4:] != ".fmm":
+        sys.exit("Only files with extension \".fmm\" can be executed")
+
+    file = open(f"{argv[1]}", "r")
+    print(parser.parse(file.read(), debug=False))
     
     # print_quadruples()
     # print_constants()

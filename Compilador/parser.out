@@ -131,38 +131,38 @@ Rule 125   np_quad_times_div -> <empty>
 Rule 126   np_quad_comparison -> <empty>
 Rule 127   np_quad_logical -> <empty>
 Rule 128   np_set_expression -> <empty>
-Rule 129   np_set_print_quad_str -> <empty>
-Rule 130   np_set_print_quad_exp -> <empty>
-Rule 131   np_set_print_same_line_quad_str -> <empty>
-Rule 132   np_set_print_same_line_quad_exp -> <empty>
-Rule 133   np_if_gotof -> <empty>
-Rule 134   np_if_end_gotof -> <empty>
-Rule 135   np_else_goto -> <empty>
-Rule 136   np_for_expression -> <empty>
-Rule 137   np_for_limit -> <empty>
-Rule 138   np_for_end -> <empty>
-Rule 139   np_while_start -> <empty>
-Rule 140   np_while_expression -> <empty>
-Rule 141   np_while_end -> <empty>
-Rule 142   np_end_main -> <empty>
-Rule 143   np_end_program -> <empty>
-Rule 144   np_set_read_quad -> <empty>
-Rule 145   np_add_params_type -> <empty>
-Rule 146   np_func_start -> <empty>
+Rule 129   np_if_gotof -> <empty>
+Rule 130   np_if_end_gotof -> <empty>
+Rule 131   np_else_goto -> <empty>
+Rule 132   np_for_expression -> <empty>
+Rule 133   np_for_limit -> <empty>
+Rule 134   np_for_end -> <empty>
+Rule 135   np_while_start -> <empty>
+Rule 136   np_while_expression -> <empty>
+Rule 137   np_while_end -> <empty>
+Rule 138   np_end_main -> <empty>
+Rule 139   np_end_program -> <empty>
+Rule 140   np_set_read_quad -> <empty>
+Rule 141   np_set_print_quad_str -> <empty>
+Rule 142   np_set_print_quad_exp -> <empty>
+Rule 143   np_set_print_same_line_quad_str -> <empty>
+Rule 144   np_set_print_same_line_quad_exp -> <empty>
+Rule 145   np_func_start -> <empty>
+Rule 146   np_add_params_type -> <empty>
 Rule 147   np_func_end -> <empty>
 Rule 148   np_check_func_call -> <empty>
 Rule 149   np_add_func_call_param -> <empty>
 Rule 150   np_func_end_params -> <empty>
 Rule 151   np_set_return_quad -> <empty>
-Rule 152   np_set_mean_quad -> <empty>
-Rule 153   np_set_median_quad -> <empty>
-Rule 154   np_set_rand_quad -> <empty>
+Rule 152   np_set_rand_quad -> <empty>
+Rule 153   np_set_mean_quad -> <empty>
+Rule 154   np_set_median_quad -> <empty>
 Rule 155   np_set_variance_quad -> <empty>
 Rule 156   np_set_std_quad -> <empty>
 Rule 157   np_set_plot_quad -> <empty>
 Rule 158   np_check_is_array -> <empty>
-Rule 159   np_verify_array_dim -> <empty>
-Rule 160   np_get_array_address -> <empty>
+Rule 159   np_get_array_address -> <empty>
+Rule 160   np_verify_array_dim -> <empty>
 
 Terminals, with rules where they appear
 
@@ -392,9 +392,9 @@ state 5
 state 6
 
     (1) program -> PROGRAM ID np_global_scope SCOLON program_2 . np_end_program
-    (143) np_end_program -> .
+    (139) np_end_program -> .
 
-    $end            reduce using rule 143 (np_end_program -> .)
+    $end            reduce using rule 139 (np_end_program -> .)
 
     np_end_program                 shift and go to state 14
 
@@ -493,9 +493,9 @@ state 14
 state 15
 
     (2) program -> PROGRAM ID np_global_scope SCOLON vars program_2 . np_end_program
-    (143) np_end_program -> .
+    (139) np_end_program -> .
 
-    $end            reduce using rule 143 (np_end_program -> .)
+    $end            reduce using rule 139 (np_end_program -> .)
 
     np_end_program                 shift and go to state 21
 
@@ -756,9 +756,9 @@ state 37
 state 38
 
     (6) main_block -> MAIN np_main_scope LPAREN RPAREN block . np_end_main
-    (142) np_end_main -> .
+    (138) np_end_main -> .
 
-    $end            reduce using rule 142 (np_end_main -> .)
+    $end            reduce using rule 138 (np_end_main -> .)
 
     np_end_main                    shift and go to state 50
 
@@ -898,9 +898,9 @@ state 48
 state 49
 
     (5) main_block -> MAIN np_main_scope LPAREN RPAREN vars block . np_end_main
-    (142) np_end_main -> .
+    (138) np_end_main -> .
 
-    $end            reduce using rule 142 (np_end_main -> .)
+    $end            reduce using rule 138 (np_end_main -> .)
 
     np_end_main                    shift and go to state 74
 
@@ -1520,9 +1520,9 @@ state 69
 state 70
 
     (89) while_loop -> WHILE . np_while_start LPAREN expression RPAREN np_while_expression block np_while_end
-    (139) np_while_start -> .
+    (135) np_while_start -> .
 
-    LPAREN          reduce using rule 139 (np_while_start -> .)
+    LPAREN          reduce using rule 135 (np_while_start -> .)
 
     np_while_start                 shift and go to state 122
 
@@ -2438,12 +2438,12 @@ state 124
 
     (20) function -> FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN . np_func_start block np_func_end
     (22) function -> FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN . vars np_func_start block np_func_end
-    (146) np_func_start -> .
+    (145) np_func_start -> .
     (9) vars -> . vars_2
     (10) vars_2 -> . VAR vars_3
     (11) vars_2 -> . VAR vars_3 vars_2
 
-    LBRACE          reduce using rule 146 (np_func_start -> .)
+    LBRACE          reduce using rule 145 (np_func_start -> .)
     VAR             shift and go to state 13
 
     np_func_start                  shift and go to state 169
@@ -3229,12 +3229,12 @@ state 163
     (93) write_2 -> expression . np_set_print_quad_exp
     (63) logical -> expression . AND np_add_operator expression
     (64) logical -> expression . OR np_add_operator expression
-    (130) np_set_print_quad_exp -> .
+    (142) np_set_print_quad_exp -> .
 
     AND             shift and go to state 128
     OR              shift and go to state 129
-    COMMA           reduce using rule 130 (np_set_print_quad_exp -> .)
-    RPAREN          reduce using rule 130 (np_set_print_quad_exp -> .)
+    COMMA           reduce using rule 142 (np_set_print_quad_exp -> .)
+    RPAREN          reduce using rule 142 (np_set_print_quad_exp -> .)
 
     np_set_print_quad_exp          shift and go to state 206
 
@@ -3242,10 +3242,10 @@ state 164
 
     (94) write_2 -> CTESTRING . np_set_print_quad_str COMMA write_2_multiple
     (95) write_2 -> CTESTRING . np_set_print_quad_str
-    (129) np_set_print_quad_str -> .
+    (141) np_set_print_quad_str -> .
 
-    COMMA           reduce using rule 129 (np_set_print_quad_str -> .)
-    RPAREN          reduce using rule 129 (np_set_print_quad_str -> .)
+    COMMA           reduce using rule 141 (np_set_print_quad_str -> .)
+    RPAREN          reduce using rule 141 (np_set_print_quad_str -> .)
 
     np_set_print_quad_str          shift and go to state 207
 
@@ -3370,9 +3370,9 @@ state 169
 state 170
 
     (22) function -> FUNCTION ID COLON return_type np_new_scope LPAREN RPAREN vars . np_func_start block np_func_end
-    (146) np_func_start -> .
+    (145) np_func_start -> .
 
-    LBRACE          reduce using rule 146 (np_func_start -> .)
+    LBRACE          reduce using rule 145 (np_func_start -> .)
 
     np_func_start                  shift and go to state 213
 
@@ -3380,12 +3380,12 @@ state 171
 
     (21) function -> FUNCTION ID COLON return_type np_new_scope LPAREN parameters RPAREN . np_func_start block np_func_end
     (23) function -> FUNCTION ID COLON return_type np_new_scope LPAREN parameters RPAREN . vars np_func_start block np_func_end
-    (146) np_func_start -> .
+    (145) np_func_start -> .
     (9) vars -> . vars_2
     (10) vars_2 -> . VAR vars_3
     (11) vars_2 -> . VAR vars_3 vars_2
 
-    LBRACE          reduce using rule 146 (np_func_start -> .)
+    LBRACE          reduce using rule 145 (np_func_start -> .)
     VAR             shift and go to state 13
 
     np_func_start                  shift and go to state 214
@@ -4439,18 +4439,18 @@ state 202
 
     (52) condition -> IF LPAREN expression RPAREN . np_if_gotof block ELSE np_else_goto block np_if_end_gotof
     (53) condition -> IF LPAREN expression RPAREN . np_if_gotof block np_if_end_gotof
-    (133) np_if_gotof -> .
+    (129) np_if_gotof -> .
 
-    LBRACE          reduce using rule 133 (np_if_gotof -> .)
+    LBRACE          reduce using rule 129 (np_if_gotof -> .)
 
     np_if_gotof                    shift and go to state 242
 
 state 203
 
     (100) read -> READ LPAREN read_2 RPAREN . np_set_read_quad SCOLON
-    (144) np_set_read_quad -> .
+    (140) np_set_read_quad -> .
 
-    SCOLON          reduce using rule 144 (np_set_read_quad -> .)
+    SCOLON          reduce using rule 140 (np_set_read_quad -> .)
 
     np_set_read_quad               shift and go to state 243
 
@@ -4557,9 +4557,9 @@ state 214
 state 215
 
     (23) function -> FUNCTION ID COLON return_type np_new_scope LPAREN parameters RPAREN vars . np_func_start block np_func_end
-    (146) np_func_start -> .
+    (145) np_func_start -> .
 
-    LBRACE          reduce using rule 146 (np_func_start -> .)
+    LBRACE          reduce using rule 145 (np_func_start -> .)
 
     np_func_start                  shift and go to state 255
 
@@ -5034,48 +5034,48 @@ state 231
 state 232
 
     (103) mean -> MEAN LPAREN ID RPAREN . np_set_mean_quad
-    (152) np_set_mean_quad -> .
+    (153) np_set_mean_quad -> .
 
-    TIMES           reduce using rule 152 (np_set_mean_quad -> .)
-    DIVIDE          reduce using rule 152 (np_set_mean_quad -> .)
-    PLUS            reduce using rule 152 (np_set_mean_quad -> .)
-    MINUS           reduce using rule 152 (np_set_mean_quad -> .)
-    EQ              reduce using rule 152 (np_set_mean_quad -> .)
-    NE              reduce using rule 152 (np_set_mean_quad -> .)
-    LT              reduce using rule 152 (np_set_mean_quad -> .)
-    GT              reduce using rule 152 (np_set_mean_quad -> .)
-    LE              reduce using rule 152 (np_set_mean_quad -> .)
-    GE              reduce using rule 152 (np_set_mean_quad -> .)
-    AND             reduce using rule 152 (np_set_mean_quad -> .)
-    OR              reduce using rule 152 (np_set_mean_quad -> .)
-    SCOLON          reduce using rule 152 (np_set_mean_quad -> .)
-    RPAREN          reduce using rule 152 (np_set_mean_quad -> .)
-    COMMA           reduce using rule 152 (np_set_mean_quad -> .)
-    RBRACKET        reduce using rule 152 (np_set_mean_quad -> .)
+    TIMES           reduce using rule 153 (np_set_mean_quad -> .)
+    DIVIDE          reduce using rule 153 (np_set_mean_quad -> .)
+    PLUS            reduce using rule 153 (np_set_mean_quad -> .)
+    MINUS           reduce using rule 153 (np_set_mean_quad -> .)
+    EQ              reduce using rule 153 (np_set_mean_quad -> .)
+    NE              reduce using rule 153 (np_set_mean_quad -> .)
+    LT              reduce using rule 153 (np_set_mean_quad -> .)
+    GT              reduce using rule 153 (np_set_mean_quad -> .)
+    LE              reduce using rule 153 (np_set_mean_quad -> .)
+    GE              reduce using rule 153 (np_set_mean_quad -> .)
+    AND             reduce using rule 153 (np_set_mean_quad -> .)
+    OR              reduce using rule 153 (np_set_mean_quad -> .)
+    SCOLON          reduce using rule 153 (np_set_mean_quad -> .)
+    RPAREN          reduce using rule 153 (np_set_mean_quad -> .)
+    COMMA           reduce using rule 153 (np_set_mean_quad -> .)
+    RBRACKET        reduce using rule 153 (np_set_mean_quad -> .)
 
     np_set_mean_quad               shift and go to state 264
 
 state 233
 
     (104) median -> MEDIAN LPAREN ID RPAREN . np_set_median_quad
-    (153) np_set_median_quad -> .
+    (154) np_set_median_quad -> .
 
-    TIMES           reduce using rule 153 (np_set_median_quad -> .)
-    DIVIDE          reduce using rule 153 (np_set_median_quad -> .)
-    PLUS            reduce using rule 153 (np_set_median_quad -> .)
-    MINUS           reduce using rule 153 (np_set_median_quad -> .)
-    EQ              reduce using rule 153 (np_set_median_quad -> .)
-    NE              reduce using rule 153 (np_set_median_quad -> .)
-    LT              reduce using rule 153 (np_set_median_quad -> .)
-    GT              reduce using rule 153 (np_set_median_quad -> .)
-    LE              reduce using rule 153 (np_set_median_quad -> .)
-    GE              reduce using rule 153 (np_set_median_quad -> .)
-    AND             reduce using rule 153 (np_set_median_quad -> .)
-    OR              reduce using rule 153 (np_set_median_quad -> .)
-    SCOLON          reduce using rule 153 (np_set_median_quad -> .)
-    RPAREN          reduce using rule 153 (np_set_median_quad -> .)
-    COMMA           reduce using rule 153 (np_set_median_quad -> .)
-    RBRACKET        reduce using rule 153 (np_set_median_quad -> .)
+    TIMES           reduce using rule 154 (np_set_median_quad -> .)
+    DIVIDE          reduce using rule 154 (np_set_median_quad -> .)
+    PLUS            reduce using rule 154 (np_set_median_quad -> .)
+    MINUS           reduce using rule 154 (np_set_median_quad -> .)
+    EQ              reduce using rule 154 (np_set_median_quad -> .)
+    NE              reduce using rule 154 (np_set_median_quad -> .)
+    LT              reduce using rule 154 (np_set_median_quad -> .)
+    GT              reduce using rule 154 (np_set_median_quad -> .)
+    LE              reduce using rule 154 (np_set_median_quad -> .)
+    GE              reduce using rule 154 (np_set_median_quad -> .)
+    AND             reduce using rule 154 (np_set_median_quad -> .)
+    OR              reduce using rule 154 (np_set_median_quad -> .)
+    SCOLON          reduce using rule 154 (np_set_median_quad -> .)
+    RPAREN          reduce using rule 154 (np_set_median_quad -> .)
+    COMMA           reduce using rule 154 (np_set_median_quad -> .)
+    RBRACKET        reduce using rule 154 (np_set_median_quad -> .)
 
     np_set_median_quad             shift and go to state 265
 
@@ -5152,11 +5152,11 @@ state 238
     (51) assignment -> ID np_add_id LBRACKET np_check_is_array expression . np_verify_array_dim RBRACKET np_get_array_address EQUALS np_add_operator expression np_set_expression SCOLON
     (63) logical -> expression . AND np_add_operator expression
     (64) logical -> expression . OR np_add_operator expression
-    (159) np_verify_array_dim -> .
+    (160) np_verify_array_dim -> .
 
     AND             shift and go to state 128
     OR              shift and go to state 129
-    RBRACKET        reduce using rule 159 (np_verify_array_dim -> .)
+    RBRACKET        reduce using rule 160 (np_verify_array_dim -> .)
 
     np_verify_array_dim            shift and go to state 270
 
@@ -5434,9 +5434,9 @@ state 249
 state 250
 
     (89) while_loop -> WHILE np_while_start LPAREN expression RPAREN . np_while_expression block np_while_end
-    (140) np_while_expression -> .
+    (136) np_while_expression -> .
 
-    LBRACE          reduce using rule 140 (np_while_expression -> .)
+    LBRACE          reduce using rule 136 (np_while_expression -> .)
 
     np_while_expression            shift and go to state 283
 
@@ -5444,10 +5444,10 @@ state 251
 
     (26) parameters -> ID COLON type np_add_vars . np_add_params_type
     (27) parameters -> ID COLON type np_add_vars . np_add_params_type COMMA parameters
-    (145) np_add_params_type -> .
+    (146) np_add_params_type -> .
 
-    COMMA           reduce using rule 145 (np_add_params_type -> .)
-    RPAREN          reduce using rule 145 (np_add_params_type -> .)
+    COMMA           reduce using rule 146 (np_add_params_type -> .)
+    RPAREN          reduce using rule 146 (np_add_params_type -> .)
 
     np_add_params_type             shift and go to state 284
 
@@ -5592,11 +5592,11 @@ state 261
     (74) factor -> ID np_add_id LBRACKET np_check_is_array expression . np_verify_array_dim RBRACKET np_get_array_address
     (63) logical -> expression . AND np_add_operator expression
     (64) logical -> expression . OR np_add_operator expression
-    (159) np_verify_array_dim -> .
+    (160) np_verify_array_dim -> .
 
     AND             shift and go to state 128
     OR              shift and go to state 129
-    RBRACKET        reduce using rule 159 (np_verify_array_dim -> .)
+    RBRACKET        reduce using rule 160 (np_verify_array_dim -> .)
 
     np_verify_array_dim            shift and go to state 288
 
@@ -5843,18 +5843,18 @@ state 274
 
     (52) condition -> IF LPAREN expression RPAREN np_if_gotof block . ELSE np_else_goto block np_if_end_gotof
     (53) condition -> IF LPAREN expression RPAREN np_if_gotof block . np_if_end_gotof
-    (134) np_if_end_gotof -> .
+    (130) np_if_end_gotof -> .
 
     ELSE            shift and go to state 295
-    RETURN          reduce using rule 134 (np_if_end_gotof -> .)
-    ID              reduce using rule 134 (np_if_end_gotof -> .)
-    IF              reduce using rule 134 (np_if_end_gotof -> .)
-    READ            reduce using rule 134 (np_if_end_gotof -> .)
-    PRINT           reduce using rule 134 (np_if_end_gotof -> .)
-    PLOT            reduce using rule 134 (np_if_end_gotof -> .)
-    FOR             reduce using rule 134 (np_if_end_gotof -> .)
-    WHILE           reduce using rule 134 (np_if_end_gotof -> .)
-    RBRACE          reduce using rule 134 (np_if_end_gotof -> .)
+    RETURN          reduce using rule 130 (np_if_end_gotof -> .)
+    ID              reduce using rule 130 (np_if_end_gotof -> .)
+    IF              reduce using rule 130 (np_if_end_gotof -> .)
+    READ            reduce using rule 130 (np_if_end_gotof -> .)
+    PRINT           reduce using rule 130 (np_if_end_gotof -> .)
+    PLOT            reduce using rule 130 (np_if_end_gotof -> .)
+    FOR             reduce using rule 130 (np_if_end_gotof -> .)
+    WHILE           reduce using rule 130 (np_if_end_gotof -> .)
+    RBRACE          reduce using rule 130 (np_if_end_gotof -> .)
 
     np_if_end_gotof                shift and go to state 296
 
@@ -5955,12 +5955,12 @@ state 277
     (97) write_2_multiple -> expression . np_set_print_same_line_quad_exp
     (63) logical -> expression . AND np_add_operator expression
     (64) logical -> expression . OR np_add_operator expression
-    (132) np_set_print_same_line_quad_exp -> .
+    (144) np_set_print_same_line_quad_exp -> .
 
     AND             shift and go to state 128
     OR              shift and go to state 129
-    COMMA           reduce using rule 132 (np_set_print_same_line_quad_exp -> .)
-    RPAREN          reduce using rule 132 (np_set_print_same_line_quad_exp -> .)
+    COMMA           reduce using rule 144 (np_set_print_same_line_quad_exp -> .)
+    RPAREN          reduce using rule 144 (np_set_print_same_line_quad_exp -> .)
 
     np_set_print_same_line_quad_exp shift and go to state 298
 
@@ -5975,10 +5975,10 @@ state 279
 
     (98) write_2_multiple -> CTESTRING . np_set_print_same_line_quad_str COMMA write_2_multiple
     (99) write_2_multiple -> CTESTRING . np_set_print_same_line_quad_str
-    (131) np_set_print_same_line_quad_str -> .
+    (143) np_set_print_same_line_quad_str -> .
 
-    COMMA           reduce using rule 131 (np_set_print_same_line_quad_str -> .)
-    RPAREN          reduce using rule 131 (np_set_print_same_line_quad_str -> .)
+    COMMA           reduce using rule 143 (np_set_print_same_line_quad_str -> .)
+    RPAREN          reduce using rule 143 (np_set_print_same_line_quad_str -> .)
 
     np_set_print_same_line_quad_str shift and go to state 299
 
@@ -6151,24 +6151,24 @@ state 289
 state 290
 
     (107) rand -> RAND LPAREN CTEI COMMA CTEI RPAREN . np_set_rand_quad
-    (154) np_set_rand_quad -> .
+    (152) np_set_rand_quad -> .
 
-    TIMES           reduce using rule 154 (np_set_rand_quad -> .)
-    DIVIDE          reduce using rule 154 (np_set_rand_quad -> .)
-    PLUS            reduce using rule 154 (np_set_rand_quad -> .)
-    MINUS           reduce using rule 154 (np_set_rand_quad -> .)
-    EQ              reduce using rule 154 (np_set_rand_quad -> .)
-    NE              reduce using rule 154 (np_set_rand_quad -> .)
-    LT              reduce using rule 154 (np_set_rand_quad -> .)
-    GT              reduce using rule 154 (np_set_rand_quad -> .)
-    LE              reduce using rule 154 (np_set_rand_quad -> .)
-    GE              reduce using rule 154 (np_set_rand_quad -> .)
-    AND             reduce using rule 154 (np_set_rand_quad -> .)
-    OR              reduce using rule 154 (np_set_rand_quad -> .)
-    SCOLON          reduce using rule 154 (np_set_rand_quad -> .)
-    RPAREN          reduce using rule 154 (np_set_rand_quad -> .)
-    COMMA           reduce using rule 154 (np_set_rand_quad -> .)
-    RBRACKET        reduce using rule 154 (np_set_rand_quad -> .)
+    TIMES           reduce using rule 152 (np_set_rand_quad -> .)
+    DIVIDE          reduce using rule 152 (np_set_rand_quad -> .)
+    PLUS            reduce using rule 152 (np_set_rand_quad -> .)
+    MINUS           reduce using rule 152 (np_set_rand_quad -> .)
+    EQ              reduce using rule 152 (np_set_rand_quad -> .)
+    NE              reduce using rule 152 (np_set_rand_quad -> .)
+    LT              reduce using rule 152 (np_set_rand_quad -> .)
+    GT              reduce using rule 152 (np_set_rand_quad -> .)
+    LE              reduce using rule 152 (np_set_rand_quad -> .)
+    GE              reduce using rule 152 (np_set_rand_quad -> .)
+    AND             reduce using rule 152 (np_set_rand_quad -> .)
+    OR              reduce using rule 152 (np_set_rand_quad -> .)
+    SCOLON          reduce using rule 152 (np_set_rand_quad -> .)
+    RPAREN          reduce using rule 152 (np_set_rand_quad -> .)
+    COMMA           reduce using rule 152 (np_set_rand_quad -> .)
+    RBRACKET        reduce using rule 152 (np_set_rand_quad -> .)
 
     np_set_rand_quad               shift and go to state 306
 
@@ -6190,9 +6190,9 @@ state 291
 state 292
 
     (51) assignment -> ID np_add_id LBRACKET np_check_is_array expression np_verify_array_dim RBRACKET . np_get_array_address EQUALS np_add_operator expression np_set_expression SCOLON
-    (160) np_get_array_address -> .
+    (159) np_get_array_address -> .
 
-    EQUALS          reduce using rule 160 (np_get_array_address -> .)
+    EQUALS          reduce using rule 159 (np_get_array_address -> .)
 
     np_get_array_address           shift and go to state 307
 
@@ -6221,9 +6221,9 @@ state 294
 state 295
 
     (52) condition -> IF LPAREN expression RPAREN np_if_gotof block ELSE . np_else_goto block np_if_end_gotof
-    (135) np_else_goto -> .
+    (131) np_else_goto -> .
 
-    LBRACE          reduce using rule 135 (np_else_goto -> .)
+    LBRACE          reduce using rule 131 (np_else_goto -> .)
 
     np_else_goto                   shift and go to state 308
 
@@ -6247,11 +6247,11 @@ state 297
     (101) read_2 -> ID np_add_id LBRACKET np_check_is_array expression . np_verify_array_dim RBRACKET np_get_array_address
     (63) logical -> expression . AND np_add_operator expression
     (64) logical -> expression . OR np_add_operator expression
-    (159) np_verify_array_dim -> .
+    (160) np_verify_array_dim -> .
 
     AND             shift and go to state 128
     OR              shift and go to state 129
-    RBRACKET        reduce using rule 159 (np_verify_array_dim -> .)
+    RBRACKET        reduce using rule 160 (np_verify_array_dim -> .)
 
     np_verify_array_dim            shift and go to state 309
 
@@ -6285,28 +6285,28 @@ state 301
     (90) for_loop -> FOR LPAREN ID np_add_id EQUALS np_add_operator expression . np_for_expression SCOLON expression np_for_limit SCOLON expression RPAREN block np_for_end
     (63) logical -> expression . AND np_add_operator expression
     (64) logical -> expression . OR np_add_operator expression
-    (136) np_for_expression -> .
+    (132) np_for_expression -> .
 
     AND             shift and go to state 128
     OR              shift and go to state 129
-    SCOLON          reduce using rule 136 (np_for_expression -> .)
+    SCOLON          reduce using rule 132 (np_for_expression -> .)
 
     np_for_expression              shift and go to state 313
 
 state 302
 
     (89) while_loop -> WHILE np_while_start LPAREN expression RPAREN np_while_expression block . np_while_end
-    (141) np_while_end -> .
+    (137) np_while_end -> .
 
-    RETURN          reduce using rule 141 (np_while_end -> .)
-    ID              reduce using rule 141 (np_while_end -> .)
-    IF              reduce using rule 141 (np_while_end -> .)
-    READ            reduce using rule 141 (np_while_end -> .)
-    PRINT           reduce using rule 141 (np_while_end -> .)
-    PLOT            reduce using rule 141 (np_while_end -> .)
-    FOR             reduce using rule 141 (np_while_end -> .)
-    WHILE           reduce using rule 141 (np_while_end -> .)
-    RBRACE          reduce using rule 141 (np_while_end -> .)
+    RETURN          reduce using rule 137 (np_while_end -> .)
+    ID              reduce using rule 137 (np_while_end -> .)
+    IF              reduce using rule 137 (np_while_end -> .)
+    READ            reduce using rule 137 (np_while_end -> .)
+    PRINT           reduce using rule 137 (np_while_end -> .)
+    PLOT            reduce using rule 137 (np_while_end -> .)
+    FOR             reduce using rule 137 (np_while_end -> .)
+    WHILE           reduce using rule 137 (np_while_end -> .)
+    RBRACE          reduce using rule 137 (np_while_end -> .)
 
     np_while_end                   shift and go to state 314
 
@@ -6331,24 +6331,24 @@ state 304
 state 305
 
     (74) factor -> ID np_add_id LBRACKET np_check_is_array expression np_verify_array_dim RBRACKET . np_get_array_address
-    (160) np_get_array_address -> .
+    (159) np_get_array_address -> .
 
-    TIMES           reduce using rule 160 (np_get_array_address -> .)
-    DIVIDE          reduce using rule 160 (np_get_array_address -> .)
-    PLUS            reduce using rule 160 (np_get_array_address -> .)
-    MINUS           reduce using rule 160 (np_get_array_address -> .)
-    EQ              reduce using rule 160 (np_get_array_address -> .)
-    NE              reduce using rule 160 (np_get_array_address -> .)
-    LT              reduce using rule 160 (np_get_array_address -> .)
-    GT              reduce using rule 160 (np_get_array_address -> .)
-    LE              reduce using rule 160 (np_get_array_address -> .)
-    GE              reduce using rule 160 (np_get_array_address -> .)
-    AND             reduce using rule 160 (np_get_array_address -> .)
-    OR              reduce using rule 160 (np_get_array_address -> .)
-    SCOLON          reduce using rule 160 (np_get_array_address -> .)
-    RPAREN          reduce using rule 160 (np_get_array_address -> .)
-    COMMA           reduce using rule 160 (np_get_array_address -> .)
-    RBRACKET        reduce using rule 160 (np_get_array_address -> .)
+    TIMES           reduce using rule 159 (np_get_array_address -> .)
+    DIVIDE          reduce using rule 159 (np_get_array_address -> .)
+    PLUS            reduce using rule 159 (np_get_array_address -> .)
+    MINUS           reduce using rule 159 (np_get_array_address -> .)
+    EQ              reduce using rule 159 (np_get_array_address -> .)
+    NE              reduce using rule 159 (np_get_array_address -> .)
+    LT              reduce using rule 159 (np_get_array_address -> .)
+    GT              reduce using rule 159 (np_get_array_address -> .)
+    LE              reduce using rule 159 (np_get_array_address -> .)
+    GE              reduce using rule 159 (np_get_array_address -> .)
+    AND             reduce using rule 159 (np_get_array_address -> .)
+    OR              reduce using rule 159 (np_get_array_address -> .)
+    SCOLON          reduce using rule 159 (np_get_array_address -> .)
+    RPAREN          reduce using rule 159 (np_get_array_address -> .)
+    COMMA           reduce using rule 159 (np_get_array_address -> .)
+    RBRACKET        reduce using rule 159 (np_get_array_address -> .)
 
     np_get_array_address           shift and go to state 316
 
@@ -6653,26 +6653,26 @@ state 317
 state 318
 
     (52) condition -> IF LPAREN expression RPAREN np_if_gotof block ELSE np_else_goto block . np_if_end_gotof
-    (134) np_if_end_gotof -> .
+    (130) np_if_end_gotof -> .
 
-    RETURN          reduce using rule 134 (np_if_end_gotof -> .)
-    ID              reduce using rule 134 (np_if_end_gotof -> .)
-    IF              reduce using rule 134 (np_if_end_gotof -> .)
-    READ            reduce using rule 134 (np_if_end_gotof -> .)
-    PRINT           reduce using rule 134 (np_if_end_gotof -> .)
-    PLOT            reduce using rule 134 (np_if_end_gotof -> .)
-    FOR             reduce using rule 134 (np_if_end_gotof -> .)
-    WHILE           reduce using rule 134 (np_if_end_gotof -> .)
-    RBRACE          reduce using rule 134 (np_if_end_gotof -> .)
+    RETURN          reduce using rule 130 (np_if_end_gotof -> .)
+    ID              reduce using rule 130 (np_if_end_gotof -> .)
+    IF              reduce using rule 130 (np_if_end_gotof -> .)
+    READ            reduce using rule 130 (np_if_end_gotof -> .)
+    PRINT           reduce using rule 130 (np_if_end_gotof -> .)
+    PLOT            reduce using rule 130 (np_if_end_gotof -> .)
+    FOR             reduce using rule 130 (np_if_end_gotof -> .)
+    WHILE           reduce using rule 130 (np_if_end_gotof -> .)
+    RBRACE          reduce using rule 130 (np_if_end_gotof -> .)
 
     np_if_end_gotof                shift and go to state 324
 
 state 319
 
     (101) read_2 -> ID np_add_id LBRACKET np_check_is_array expression np_verify_array_dim RBRACKET . np_get_array_address
-    (160) np_get_array_address -> .
+    (159) np_get_array_address -> .
 
-    RPAREN          reduce using rule 160 (np_get_array_address -> .)
+    RPAREN          reduce using rule 159 (np_get_array_address -> .)
 
     np_get_array_address           shift and go to state 325
 
@@ -6869,11 +6869,11 @@ state 326
     (90) for_loop -> FOR LPAREN ID np_add_id EQUALS np_add_operator expression np_for_expression SCOLON expression . np_for_limit SCOLON expression RPAREN block np_for_end
     (63) logical -> expression . AND np_add_operator expression
     (64) logical -> expression . OR np_add_operator expression
-    (137) np_for_limit -> .
+    (133) np_for_limit -> .
 
     AND             shift and go to state 128
     OR              shift and go to state 129
-    SCOLON          reduce using rule 137 (np_for_limit -> .)
+    SCOLON          reduce using rule 133 (np_for_limit -> .)
 
     np_for_limit                   shift and go to state 328
 
@@ -7019,17 +7019,17 @@ state 333
 state 334
 
     (90) for_loop -> FOR LPAREN ID np_add_id EQUALS np_add_operator expression np_for_expression SCOLON expression np_for_limit SCOLON expression RPAREN block . np_for_end
-    (138) np_for_end -> .
+    (134) np_for_end -> .
 
-    RETURN          reduce using rule 138 (np_for_end -> .)
-    ID              reduce using rule 138 (np_for_end -> .)
-    IF              reduce using rule 138 (np_for_end -> .)
-    READ            reduce using rule 138 (np_for_end -> .)
-    PRINT           reduce using rule 138 (np_for_end -> .)
-    PLOT            reduce using rule 138 (np_for_end -> .)
-    FOR             reduce using rule 138 (np_for_end -> .)
-    WHILE           reduce using rule 138 (np_for_end -> .)
-    RBRACE          reduce using rule 138 (np_for_end -> .)
+    RETURN          reduce using rule 134 (np_for_end -> .)
+    ID              reduce using rule 134 (np_for_end -> .)
+    IF              reduce using rule 134 (np_for_end -> .)
+    READ            reduce using rule 134 (np_for_end -> .)
+    PRINT           reduce using rule 134 (np_for_end -> .)
+    PLOT            reduce using rule 134 (np_for_end -> .)
+    FOR             reduce using rule 134 (np_for_end -> .)
+    WHILE           reduce using rule 134 (np_for_end -> .)
+    RBRACE          reduce using rule 134 (np_for_end -> .)
 
     np_for_end                     shift and go to state 335
 
