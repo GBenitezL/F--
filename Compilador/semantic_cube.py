@@ -46,7 +46,7 @@ class Semantic_Cube:
                 symbol in comparison_symbols):
                 return 'bool'
         
-        if type1 == 'int' and type2 =='float':
+        if type1 == 'float' and type2 =='int':
             if symbol == '=':
                 return 'float'
 

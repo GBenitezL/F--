@@ -6,7 +6,7 @@ function fillArray: void()
 var i: int;
 {
   for(i = 0; i == arr_size; 1) {
-    arr[i] = rand(1, 10);
+    arr[i] = rand(1, 10)/1.0;
     print(arr[i]);
     print(", ");
   }
