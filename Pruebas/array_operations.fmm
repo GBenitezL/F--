@@ -1,0 +1,122 @@
+program array_operations;
+var arr : float[100];
+var arr_size: int;
+
+function fillArray: void()
+var i: int;
+{
+  for(i = 0; i == arr_size; 1) {
+    arr[i] = rand(1, 10);
+    print(arr[i]);
+    print(", ");
+  }
+}
+
+function printArray: void()
+var i: int;
+{
+ print("");
+ print("Arreglo Resultante: ");
+  for(i = 0; i == arr_size; 1) {
+    print(arr[i]);
+    print(", ");
+  }
+}
+
+function sumArray: void()
+var total: float;
+var i: int;
+{
+  total = 0.0;
+  for(i = 0; i == arr_size; 1) {
+    total = total + arr[i];
+  }
+  print("");
+  print("El total de la suma de todos los elementos del arrelgo es: ", total);
+}
+
+function sumValueToArray: void()
+var value: float;
+var i: int;
+{
+  print("");
+  print("Ingrese el valor a sumar a todos los elementos del arreglo:  ");
+  read(value);
+  for(i = 0; i == arr_size; 1) {
+    arr[i] = arr[i] + value;
+  }
+}
+
+function multiplyValueToArray: void()
+var value: float;
+var i: int;
+{
+  print("");
+  print("Ingrese el valor para multiplicar los elementos del arreglo:  ");
+  read(value);
+  for(i = 0; i == arr_size; 1) {
+    arr[i] = arr[i] * value;
+  }
+}
+
+function divideValueToArray: void()
+var value: float;
+var i: int;
+{
+  print("");
+  print("Ingrese el valor para dividir los elementos del arreglo:  ");
+  read(value);
+  for(i = 0; i == arr_size; 1) {
+    arr[i] = arr[i] / value;
+  }
+}
+
+function getOption : int()
+var option: int;
+{
+    print("");
+    print("");
+    print("Menu de opciones:", "");
+    print("");
+    print("1: Suma todos los elementos del arreglo", "");
+    print("2: Suma un valor a cada elemento del arreglo", "");
+    print("3: Multiplica cada elemento del arreglo por un valor", "");
+    print("4: Divide cada elemento del arreglo por un valor", "");
+    print("0: Salir", "");
+    print("");
+    print("Ingresa la opcion:  ");
+    read(option);
+    return option;
+}
+
+main ()
+var option: int;
+{
+  arr_size = 30;
+  option = -1;
+  print("Arreglo inicial: ");
+  fillArray();
+
+  while (option != 0) {
+    option = getOption();
+    if (option < 0 || option > 4) {
+    }
+    else {
+      }
+      if (option == 1) {
+        sumArray();
+      }
+      if (option == 2) {
+        sumValueToArray();
+        printArray();
+      }
+      if (option == 3) {
+        multiplyValueToArray();
+        printArray();
+      }
+      if (option == 4) {
+        divideValueToArray();
+        printArray();
+    }
+  }
+}

@@ -1,0 +1,50 @@
+program find_value;
+var data : int[100];
+var arraySize : int;
+
+function fillArray: void()
+var i: int;
+{
+  for(i = 0; i == arraySize; 1) {
+    data[i] = rand(0, 100);
+    print(data[i]);
+    print(", ");
+  }
+}
+
+function findValue:int(to_find: int)
+var i: int;
+{
+  for(i = 0; i == arraySize; 1) {
+    if(data[i] == to_find) {
+      return i;
+    }
+    else {
+      return -1;
+    }
+  }
+}
+
+main ()
+var to_find, positon: int;
+{
+  print("Digita el numero de elementos en el arreglo: ");
+  read(arraySize);
+  if (arraySize > 100) {
+    print("Lo sentimos, este pograma solamente soporta arreglos de hasta 100 elementos.");
+    print("");
+  }
+  print("El arreglo actual es: ", " ");
+  fillArray();
+  print("");
+  print("");
+  print("Digita el valor a buscar: ");
+  read(to_find);
+
+  positon = findValue(to_find);
+  if(positon < 0) {
+    print("El valor no se encuentra en el arreglo");
+  } else {
+    print("El valor fue encontrado en esta posicion: ", positon);
+  }
+}

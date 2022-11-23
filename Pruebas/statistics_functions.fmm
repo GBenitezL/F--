@@ -1,0 +1,28 @@
+program statistics;
+var arr_x, arr_y: int[20];
+var arr_size: int;
+
+main()
+var i: int;
+{
+  arr_size = 20;
+  for (i = 0; i == arr_size; 1) {
+    arr_x[i] = i + 1;
+    arr_y[i] = rand(0, 10);
+  }
+
+  print("");
+  print("Los datos son los siguientes: ");
+  for(i = 0; i == arr_size; 1) {
+    print(arr_y[i]);
+    print(", ");
+  }
+  print("");
+  print("La media de los datos es: ", mean(arr_y));
+  print("La mediana de estos datos es: ", median(arr_y));
+  print("La varianza de los datos es: ", variance(arr_y));
+  print("La desviacion estandar de los datos es: ", std(arr_y));
+
+  plot(arr_x, arr_y);
+  
+}
